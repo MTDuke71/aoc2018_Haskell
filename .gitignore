@@ -1,0 +1,58 @@
+# --- GHC compiler artifacts (produced next to .hs files) ---
+*.hi
+*.o
+*.dyn_hi
+*.dyn_o
+*.hp
+*.prof
+*.aux
+*.hc
+*.p_hi
+*.p_o
+
+# --- Compiled executables ---
+# Haskell builds drop these alongside the source on Windows/Linux/Mac.
+*.exe
+# Day 1 produces a bare "hello" binary on Linux/Mac from `ghc src/Hello.hs -o hello`.
+tutorial/*/hello
+
+# --- Cabal ---
+dist/
+dist-newstyle/
+.cabal-sandbox/
+cabal.sandbox.config
+cabal.project.local
+cabal.project.local~
+.ghc.environment.*
+
+# --- Stack (in case it ever gets used) ---
+.stack-work/
+
+# --- Haskell Language Server / HIE ---
+.hie/
+hie.yaml.local
+
+# --- Editor / IDE ---
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.shared.json
+*.swp
+*.swo
+*~
+.idea/
+
+# --- OS noise ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Claude Code (machine-specific) ---
+.claude/
+
+# --- Reference material (local only, not shipped) ---
+# Rust baseline kept for style/documentation cross-reference; not part of this project.
+reference/
+
+# --- Personal puzzle inputs ---
+# AoC asks that individual puzzle inputs not be redistributed.
+inputs/
