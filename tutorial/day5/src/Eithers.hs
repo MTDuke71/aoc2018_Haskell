@@ -66,7 +66,8 @@ main = do
   putStrLn ("parseInt \"4x\"           = " ++ show (parseInt "4x"))
   putStrLn ("describe (Right 7)      = " ++ describe (Right 7))
   putStrLn ("describe (Left \"oops\")  = " ++ describe (Left "oops"))
-  putStrLn ("mapRight (+1) (Right 4) = " ++ show (mapRight (+ (1 :: Int)) (Right 4)))
+  putStrLn ("mapRight (+1) (Right 4) = "
+           ++ show (mapRight (+ (1 :: Int)) (Right 4 :: Either String Int)))
   putStrLn ("mapRight (+1) (Left e)  = "
            ++ show (mapRight (+ (1 :: Int)) (Left "e" :: Either String Int)))
   putStrLn ("divideStrings \"10\" \"2\"  = " ++ show (divideStrings "10" "2"))
