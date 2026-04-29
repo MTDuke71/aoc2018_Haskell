@@ -8,22 +8,27 @@ Haskell is new to me; Rust, C, and AUTOSAR are not. Before starting the puzzles,
 
 Tutorial in progress. Puzzle solutions have not started yet.
 
-- [x] Day 1 of tutorial — install + Hello World
-- [ ] Days 2–11 of tutorial — language fundamentals
-- [ ] Puzzle solutions
+- [x] Days 1–10 of tutorial — language fundamentals + cabal/hspec
+- [ ] Day 11 of tutorial — puts it together by filling in `Day00` (warm-up = AoC 2017 Day 1 port)
+- [ ] AoC 2018 Days 1–25 — skeleton modules in place; each filled in as solved
 
 ## Repo layout
 
 ```
 .
-├── tutorial/              -- 11-day Haskell ramp-up (start here)
-│   ├── README.md          -- plan overview
-│   └── dayX/              -- one folder per day: README.md + src/
+├── aoc2018.cabal          -- the AoC 2018 cabal project (root package)
+├── src/                   -- Day00.hs..Day25.hs (skeletons until each day is solved)
+├── app/Main.hs            -- the aoc2018-solve dispatch executable
+├── test/                  -- hspec test suite (pending until each day is solved)
+├── inputs/                -- personal puzzle inputs (gitignored per AoC policy)
 ├── Problem_Statements/    -- puzzle text for all 25 days
 │   └── days/dayNN.md
-├── src/                   -- solution modules (to be added)
-└── inputs/                -- personal puzzle inputs (gitignored per AoC policy)
+└── tutorial/              -- 11-day Haskell ramp-up (separate from the cabal project)
+    ├── README.md          -- plan overview
+    └── dayX/              -- one folder per day: README.md + src/
 ```
+
+`tutorial/day10/` is its own self-contained cabal project (`tutorial-day10`); the top-level `aoc2018` project is independent and lives at the repo root.
 
 ## Getting started with the tutorial
 
@@ -32,6 +37,25 @@ Tutorial in progress. Puzzle solutions have not started yet.
 3. Start with [tutorial/day1/README.md](tutorial/day1/README.md).
 
 Each tutorial day is self-contained: a `README.md` walkthrough plus a `src/` folder of runnable Haskell files.
+
+## Running an AoC 2018 day
+
+Once a day is solved (or even against its skeleton):
+
+```bash
+cabal build              # compile the library + executable
+cabal test               # run the hspec suite (pending until days are solved)
+cabal run aoc2018-solve -- 1     # dispatch Day 1 against inputs/day01.txt
+cabal run aoc2018-solve -- 0     # the warm-up (AoC 2017 Day 1 port, filled in on Day 11)
+```
+
+Adding a real solution to a skeleton day is three edits:
+
+1. Replace the `parseInput` / `part1` / `part2` bodies in `src/DayNN.hs`.
+2. Replace the `pendingWith` lines in `test/DayNNSpec.hs` with real assertions.
+3. Drop the puzzle input at `inputs/dayNN.txt`.
+
+No new files, no cabal-file edits. The dispatch table in `app/Main.hs` already covers all 26 days.
 
 ## Toolchain
 

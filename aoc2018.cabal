@@ -1,0 +1,94 @@
+cabal-version:      3.0
+name:               aoc2018
+version:            0.1.0.0
+synopsis:           Advent of Code 2018 solutions in Haskell.
+description:        AoC 2018 puzzle solutions, plus a Day 0 warm-up that
+                    ports AoC 2017 Day 1 to Haskell. Skeleton modules
+                    Day00..Day25 are in place; each is filled in as the
+                    matching puzzle is solved.
+license:            BSD-3-Clause
+author:             Matt LaDuke
+maintainer:         matt.laduke@gmail.com
+build-type:         Simple
+extra-doc-files:    CHANGELOG.md
+
+common warnings
+    ghc-options: -Wall
+
+library
+    import:           warnings
+    exposed-modules:  Day00
+                    , Day01
+                    , Day02
+                    , Day03
+                    , Day04
+                    , Day05
+                    , Day06
+                    , Day07
+                    , Day08
+                    , Day09
+                    , Day10
+                    , Day11
+                    , Day12
+                    , Day13
+                    , Day14
+                    , Day15
+                    , Day16
+                    , Day17
+                    , Day18
+                    , Day19
+                    , Day20
+                    , Day21
+                    , Day22
+                    , Day23
+                    , Day24
+                    , Day25
+    build-depends:    base       >= 4.18 && < 5
+                    , containers >= 0.6  && < 0.8
+    hs-source-dirs:   src
+    default-language: Haskell2010
+
+executable aoc2018-solve
+    import:           warnings
+    main-is:          Main.hs
+    build-depends:    base
+                    , aoc2018
+    hs-source-dirs:   app
+    default-language: Haskell2010
+
+test-suite aoc2018-test
+    import:             warnings
+    type:               exitcode-stdio-1.0
+    main-is:            Spec.hs
+    hs-source-dirs:     test
+    other-modules:      Day00Spec
+                      , Day01Spec
+                      , Day02Spec
+                      , Day03Spec
+                      , Day04Spec
+                      , Day05Spec
+                      , Day06Spec
+                      , Day07Spec
+                      , Day08Spec
+                      , Day09Spec
+                      , Day10Spec
+                      , Day11Spec
+                      , Day12Spec
+                      , Day13Spec
+                      , Day14Spec
+                      , Day15Spec
+                      , Day16Spec
+                      , Day17Spec
+                      , Day18Spec
+                      , Day19Spec
+                      , Day20Spec
+                      , Day21Spec
+                      , Day22Spec
+                      , Day23Spec
+                      , Day24Spec
+                      , Day25Spec
+    build-depends:      base
+                      , aoc2018
+                      , hspec    >= 2.10 && < 2.12
+    build-tool-depends: hspec-discover:hspec-discover >= 2.10 && < 2.12
+    default-language:   Haskell2010
