@@ -1,0 +1,11 @@
+-- | hspec-discover entry point.
+--
+-- The pragma below is a /preprocessor directive/. At build time, cabal
+-- runs 'hspec-discover' on this file; it scans the @test/@ tree for
+-- modules ending in @Spec.hs@, generates a 'main' that runs them all,
+-- and feeds that to the compiler in place of this file.
+--
+-- The upshot: to add a new test module, drop @SomethingSpec.hs@ in
+-- the right folder, list it under 'other-modules:' in the .cabal file,
+-- and rebuild. No editing of this file required.
+{-# OPTIONS_GHC -F -pgmF hspec-discover #-}

@@ -1,0 +1,47 @@
+cabal-version:      3.0
+name:               tutorial-day10
+version:            0.1.0.0
+synopsis:           Day 10 of the Haskell pre-AoC tutorial — cabal layout + hspec.
+description:        A tiny self-contained cabal project that splits the Day 9
+                    one-file example into a library (two modules), an
+                    executable that runs the puzzle on sample.txt, and an
+                    hspec test suite. Reference material; not part of the
+                    eventual AoC 2018 cabal project.
+license:            BSD-3-Clause
+author:             Matt LaDuke
+maintainer:         matt.laduke@gmail.com
+build-type:         Simple
+extra-doc-files:    CHANGELOG.md
+
+common warnings
+    ghc-options: -Wall
+
+library
+    import:           warnings
+    exposed-modules:  AoC.Parsing
+                    , AoC.Solver
+    build-depends:    base       >= 4.18 && < 5
+                    , containers >= 0.6  && < 0.8
+    hs-source-dirs:   src
+    default-language: Haskell2010
+
+executable day10-solve
+    import:           warnings
+    main-is:          Main.hs
+    build-depends:    base
+                    , tutorial-day10
+    hs-source-dirs:   app
+    default-language: Haskell2010
+
+test-suite day10-test
+    import:             warnings
+    type:               exitcode-stdio-1.0
+    main-is:            Spec.hs
+    hs-source-dirs:     test
+    other-modules:      AoC.ParsingSpec
+                      , AoC.SolverSpec
+    build-depends:      base
+                      , tutorial-day10
+                      , hspec    >= 2.10 && < 2.12
+    build-tool-depends: hspec-discover:hspec-discover >= 2.10 && < 2.12
+    default-language:   Haskell2010
