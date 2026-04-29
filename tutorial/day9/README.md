@@ -194,7 +194,7 @@ main = do
 ghci> parseInput "+1\n-2\n+3"
 [1,-2,3]
 ghci> part1 [1, -2, 3, 1, -5, 8, 4, -3, 7, -2]
-14
+12
 ```
 
 That is the testability win — you do not need a file to exercise the logic.
