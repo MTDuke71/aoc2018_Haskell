@@ -99,6 +99,75 @@ charCounts = foldl' (\m c -> Map.insertWith (+) c 1 m) Map.empty
 
 This is the canonical **frequency count** idiom in Haskell, and it is the single most reused pattern across AoC. Memorize the shape.
 
+### Token by token
+
+Two lines, two passes — the type signature first, then the body.
+
+**Line 1**: `charCounts :: String -> Map.Map Char Int`
+
+| Token | What it is | What it means |
+|-------|------------|---------------|
+| `charCounts` | identifier being typed | name on the left of `::` is the thing we're declaring a type for |
+| `::` | **"has type"** | type-signature separator |
+| `String` | type | built-in alias for `[Char]` — a linked list of `Char` |
+| `->` | function arrow | type-level. `A -> B` is "function from A to B" |
+| `Map.Map` | qualified type constructor | `Map` (left of `.`) is the **module alias** from `import qualified Data.Map.Strict as Map`. `Map` (right of `.`) is the **type constructor** defined in that module. The duplication is unfortunate but unavoidable — the module and the type happen to share a name |
+| `Char` | type | first type argument to `Map.Map` — the **key** type |
+| `Int` | type | second type argument to `Map.Map` — the **value** type |
+
+`Map.Map` has kind `* -> * -> *` (it takes two type arguments). `Map.Map Char Int` is the fully-applied type — concretely, a balanced binary tree keyed by `Char` with `Int` values. So the whole line reads: *"`charCounts` is a function from `String` to `Map Char Int`."*
+
+**Line 2**: `charCounts = foldl' (\m c -> Map.insertWith (+) c 1 m) Map.empty`
+
+This is **point-free**: the `String` parameter from the type signature isn't named on the left of `=`. We'll see why in a moment.
+
+| Token | What it is | What it means |
+|-------|------------|---------------|
+| `charCounts` | identifier | must match the name in the type signature |
+| `=` | definition | binds the right-hand side to the name |
+| `foldl'` | function | strict left fold from `Data.List`. Type: `(b -> a -> b) -> b -> [a] -> b` — *"given a step, a seed, and a list, walk the list left-to-right with a strict accumulator"* |
+| `(` | opens a parenthesised expression | groups the lambda into a single argument |
+| `\` | starts a **lambda** | read as "λ". The next tokens before `->` are parameters |
+| `m` | lambda parameter | will be the accumulator (the growing `Map`) |
+| `c` | lambda parameter | will be the next `Char` from the string |
+| `->` | lambda body separator | **different `->` from the type signature!** This one is term-level, separating lambda params from body |
+| `Map.insertWith` | qualified function | from `Data.Map.Strict`. Type: `Ord k => (a -> a -> a) -> k -> a -> Map k a -> Map k a` |
+| `(+)` | operator-as-function | parens around an infix operator turn it into a regular two-arg function. `(+) === \x y -> x + y` |
+| `c` | argument to `insertWith` | the **key** — the character we're inserting |
+| `1` | argument to `insertWith` | the **new value** — the count to insert (or combine with the existing one) |
+| `m` | argument to `insertWith` | the **existing map** — the accumulator |
+| `)` | closes the lambda | |
+| `Map.empty` | qualified value | the empty `Map`. From `Data.Map.Strict`. The **seed** for the fold |
+
+### How the pieces compose
+
+Lay out `foldl'` with named slots:
+
+```
+foldl' :: (b -> a -> b) ->   b   -> [a] -> b
+            step             seed   list
+```
+
+We've supplied:
+
+- step = `\m c -> Map.insertWith (+) c 1 m`   (a `Map Char Int -> Char -> Map Char Int`)
+- seed = `Map.empty`                           (a `Map Char Int`)
+- list = **not supplied**
+
+Two arguments out of three, so `foldl' step seed` has the leftover type `[Char] -> Map Char Int`, which is exactly `String -> Map Char Int` — the type signature on line 1. That's why the body doesn't need to name the input string: partial application already produces a function of the right shape. **Point-free works because Haskell is curried.**
+
+### Trace on `"bab"`
+
+```
+seed:      m = {}                         (Map.empty)
+c = 'b':   m = {b: 1}                     (insertWith (+) 'b' 1 {})
+c = 'a':   m = {a: 1, b: 1}               (insertWith (+) 'a' 1 {b:1})
+c = 'b':   m = {a: 1, b: 2}               (insertWith (+) 'b' 1 {a:1,b:1}; combines to 1 + 1)
+result:    {a: 1, b: 2}
+```
+
+The fold's strictness (`'` in `foldl'`) is what makes the value `2` a real evaluated `Int` rather than a thunk `(+) 1 1`. Without the `'`, you'd build a tower of unevaluated `(+) 1 (+) 1 (+) 1 …` thunks for hot characters — the classic lazy-counter space leak that motivates `Data.Map.Strict` over the lazy `Data.Map` in the first place.
+
 ### `Data.Map.Strict` and qualified imports
 
 Day 1 introduced `Data.Set` qualified. `Data.Map.Strict` follows the same rule:
