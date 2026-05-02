@@ -69,6 +69,33 @@ A `String` in Haskell is `[Char]`, a linked list of boxed characters. That is ge
 
 **Rust analogue**: `type Puzzle = Vec<String>`. Same shape, except Rust's `String` is a contiguous UTF-8 buffer rather than a linked list of `Char` boxes.
 
+### Naming conventions: singular vs plural
+
+Throughout this file (and every Haskell file you will read), **plural names mean lists**. The trailing `s` is the marker. So `ids` is *the whole list of box IDs*, not one element. The single-element version is `id` or `boxId`.
+
+| Singular (one element) | Plural (the list)        | Type in this file        |
+|------------------------|--------------------------|--------------------------|
+| `x`, `c`, `d`          | `xs`, `cs`, `ds`         | `[a]`, `[Char]`, `[Int]` |
+| `boxId`                | `ids` (or `boxIds`)      | `String` vs `[String]`   |
+| `delta` (Day 1)        | `deltas`                 | `Int` vs `[Int]`         |
+
+Both forms appear inside this file:
+
+- `part1 ids = …`     — `ids :: [String]`, the whole 250-element list
+- `hasExactly n boxId` — `boxId :: String`, one 26-character ID
+- `commonLetters a b`  — `a, b :: String`, two individual IDs picked from the list
+
+The convention is so consistent that experienced Haskellers read parameter names as type hints: a one-letter name like `x` almost always means *one element of something*, while the same letter doubled (`xs`) means *the list of those elements*.
+
+**Where the iteration is hiding**: in line 73 (`part1 ids = count (hasExactly 2) ids * …`) there is no visible loop, yet every element of `ids` is examined. The walk happens **inside** `count` and `filter`. Compare the Rust mental model:
+
+| | Where the iteration appears |
+|---|---|
+| Rust  | `ids.iter().filter(...).count()` — explicit on the call side, dotted onto `ids` |
+| Haskell | `count (hasExactly 2) ids` — hidden inside `count`/`filter`; `ids` is just passed |
+
+Haskell is consistently *quieter* about loops than Rust is. The loop is always there; it is just spelled `filter`, `foldl'`, `map`, `zipWith`, or `scanl` instead of `for`. Once you internalise that "any function whose name suggests `[a] -> something` is doing a walk for you," the lack of an explicit loop on line 73 stops being surprising.
+
 ---
 
 ## `parseInput`
