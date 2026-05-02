@@ -200,6 +200,36 @@ firstDup = go Set.empty
 
 This is the heart of the day. It composes three pieces of new vocabulary, and it only works because Haskell is lazy.
 
+### Background — what "lazy" means in Haskell
+
+Every later section in this Part 2 walkthrough leans on lazy evaluation. Here is the one-page version of the mechanism so the rest reads cleanly. Skip this if it is already familiar; come back if any subsequent section feels surprising.
+
+**Every expression is a recipe, not a value, until somebody demands the value.** When you write `let x = expensive in 0`, Haskell does not run `expensive`. It records that `x` is a thunk — an unevaluated recipe — and returns `0`. The thunk only runs when something pattern-matches on `x`, compares it, or otherwise *needs* the answer. Once forced, the result is cached, so a second demand on `x` is free. Compare to Rust, where `let x = expensive();` runs `expensive()` immediately even if `x` is never read.
+
+That single property, lifted to lists, gives us **infinite data structures that are finite in memory**. The infinite list of natural numbers `[1..]` is defined recursively:
+
+```haskell
+[1..] = 1 : [2..]    -- head 1, tail = [2..], itself defined as 2 : [3..], ...
+```
+
+In a strict language this loops forever. In Haskell the tail `[2..]` is a thunk; it only runs when something asks for the second element. `take 5 [1..]` demands five cons cells and never asks about the sixth, so the sixth thunk stays frozen and is eventually garbage-collected. The "infinite" list never materialises beyond the prefix you actually consume.
+
+That is why `cycle deltas`, `scanl (+) 0 (cycle deltas)`, and `firstDup` compose into a working algorithm. Each layer is itself a lazy infinite list:
+
+| Layer | Type | When it computes |
+|-------|------|------------------|
+| `cycle deltas` | `[Int]` | Produces one element each time the next layer pulls. |
+| `scanl (+) 0 (cycle deltas)` | `[Int]` | Produces one running total each time `firstDup` pulls. |
+| `firstDup …` | `Int` | Pulls until it sees a duplicate, then returns. |
+
+When `firstDup` returns at step 133,165, the unread tail of the running-totals list is never demanded. The thunks for steps 133,166, 133,167, … stay frozen forever and are reclaimed by the garbage collector. **Nothing is wasted.**
+
+**The trap.** Laziness is great for streaming but dangerous when thunks accumulate without ever being forced. The classic example is `foldl (+) 0 [1..1_000_000]`: a strict language gives you `500000500000`. Haskell's `foldl` is lazy in its accumulator, so the accumulator builds a tower of one million `+` thunks before finally collapsing them at the end — O(n) memory instead of O(1). That is the entire reason Part 1 of this day uses `foldl'` (with the apostrophe — strict) rather than `foldl`. The rule of thumb: numeric accumulators want strictness; stream pipelines want laziness.
+
+**Rust mental model.** Rust iterators (`std::iter::Cycle`, `.scan(...)`, `.take(...)`) are pull-based and conceptually similar. The difference: Haskell's laziness is universal — *any* expression, including a regular `let`-binding to an `[Int]`, can be lazy. In Rust, laziness is opt-in and lives on the iterator type; you cannot bind an "infinite `Vec<i32>`" to a name. In Haskell `let totals = scanl (+) 0 (cycle deltas)` produces a perfectly normal first-class `[Int]` value that just happens to be infinite, and you can pattern match on it, take a prefix, pass it to another function, all the same.
+
+With that in pocket, the rest of this section walks through the three pieces in turn.
+
 ### `cycle :: [a] -> [a]`
 
 ```ghci
