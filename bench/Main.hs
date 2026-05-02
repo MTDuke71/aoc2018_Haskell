@@ -32,17 +32,21 @@ import           Criterion.Main       (Benchmark, bench, bgroup, defaultMain,
 
 import qualified Day00
 import qualified Day01
+import qualified Day02
 
 -- | One day's bgroup. Reads the input, forces parsing once via 'env'
 -- so per-bench timings are not polluted by the parse, then registers
--- all four benches under @<name>@.
+-- all four benches under @<name>@. The result types of @part1@ and
+-- @part2@ are polymorphic so days whose answer is, say, a 'String'
+-- (Day 2) plug in unchanged — only the 'NFData' constraints matter
+-- for criterion's 'nf'.
 dayBench
-  :: NFData puzzle
+  :: (NFData puzzle, NFData a, NFData b)
   => String                         -- ^ bgroup name, e.g. @\"day00\"@
   -> FilePath                       -- ^ input file path
   -> (String -> puzzle)             -- ^ parseInput
-  -> (puzzle -> Int)                -- ^ part1
-  -> (puzzle -> Int)                -- ^ part2
+  -> (puzzle -> a)                  -- ^ part1
+  -> (puzzle -> b)                  -- ^ part2
   -> Benchmark
 dayBench name path parseInput part1 part2 =
   env (do raw <- readFile path
@@ -60,5 +64,6 @@ main :: IO ()
 main = defaultMain
   [ dayBench "day00" "inputs/day00.txt" Day00.parseInput Day00.part1 Day00.part2
   , dayBench "day01" "inputs/day01.txt" Day01.parseInput Day01.part1 Day01.part2
+  , dayBench "day02" "inputs/day02.txt" Day02.parseInput Day02.part1 Day02.part2
   -- new days drop in here as they are solved.
   ]

@@ -597,4 +597,4 @@ One subtle difference: Rust uses `HashSet` (hashing, O(1)). Haskell's default or
 
 ---
 
-**Navigation**: [Problem statement](day01.md) | [Summary table](summary_2018.md) | [← Day 0](day00_function_guide.md) | Day 2 → *(not yet attempted)*
+**Navigation**: [Problem statement](day01.md) | [Summary table](summary_2018.md) | [← Day 0](day00_function_guide.md) | [Day 2 →](day02_function_guide.md)
