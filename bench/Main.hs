@@ -31,6 +31,7 @@ import           Criterion.Main       (Benchmark, bench, bgroup, defaultMain,
                                        env, nf)
 
 import qualified Day00
+import qualified Day01
 
 -- | One day's bgroup. Reads the input, forces parsing once via 'env'
 -- so per-bench timings are not polluted by the parse, then registers
@@ -58,5 +59,6 @@ dayBench name path parseInput part1 part2 =
 main :: IO ()
 main = defaultMain
   [ dayBench "day00" "inputs/day00.txt" Day00.parseInput Day00.part1 Day00.part2
+  , dayBench "day01" "inputs/day01.txt" Day01.parseInput Day01.part1 Day01.part2
   -- new days drop in here as they are solved.
   ]

@@ -1,6 +1,6 @@
 # Advent of Code 2018 — Haskell Solutions Summary
 
-**Status**: IN PROGRESS (1/26, including the Day 0 warm-up)
+**Status**: IN PROGRESS (2/26, including the Day 0 warm-up)
 **Project**: [aoc2018.cabal](../../aoc2018.cabal) — single cabal package, library modules `Day00..Day25` in [src/](../../src/), dispatcher [app/Main.hs](../../app/Main.hs), tests in [test/](../../test/), benches in [bench/](../../bench/).
 
 **Run a day**: `cabal run aoc2018-solve -- <n>` (reads `inputs/day<nn>.txt`).
@@ -13,9 +13,9 @@
 
 | Metric | Value |
 |--------|-------|
-| **Progress** | 1/26 (Day 0 warm-up done; Days 1–25 pending) |
-| **Total Runtime** | 43.6 µs (Day 0 only so far) |
-| **Average per Day** | 43.6 µs |
+| **Progress** | 2/26 (Day 0 warm-up + Day 1 done; Days 2–25 pending) |
+| **Total Runtime** | 36.5 ms (Day 0 + Day 1) |
+| **Average per Day** | 18.2 ms |
 
 ---
 
@@ -26,7 +26,7 @@ Reported on a Windows 11 / GHC 9.6.7 / `-O2` build via `cabal bench` (criterion)
 | Day | Title | Parse | Part 1 | Part 2 | Total | Algorithm | Notes |
 |----:|-------|------:|-------:|-------:|------:|-----------|-------|
 | [00](day00_function_guide.md) | Inverse Captcha (warm-up, AoC 2017 Day 1) | 17.5 µs | 11.2 µs | 14.9 µs | 43.6 µs | Modular circular comparison | `zip ds (rotate k ds)` substitutes for indexed access; offset = 1 (P1) and n/2 (P2). |
-|  1 | *not yet attempted* | — | — | — | — | — | — |
+| [01](day01_function_guide.md) | Chronal Calibration | 629.6 µs | 1.3 µs | 35.79 ms | 36.4 ms | Sum (P1); first-repeat search over `scanl (+) 0 (cycle deltas)` with `Data.Set` (P2) | Lazy infinite list pays off — `firstDup` consumes only as much of the running-total stream as it needs. |
 |  2 | *not yet attempted* | — | — | — | — | — | — |
 |  3 | *not yet attempted* | — | — | — | — | — | — |
 |  4 | *not yet attempted* | — | — | — | — | — | — |
@@ -59,6 +59,7 @@ Reported on a Windows 11 / GHC 9.6.7 / `-O2` build via `cabal bench` (criterion)
 | Day | Title | Part 1 | Part 2 |
 |----:|-------|-------:|-------:|
 | [00](day00_function_guide.md) | Inverse Captcha | **1171** | **1024** |
+| [01](day01_function_guide.md) | Chronal Calibration | **576** | **77674** |
 
 (Filled in as days are solved; pending days omitted from this table.)
 
