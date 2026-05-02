@@ -257,6 +257,132 @@ part1 ids = length (filter (hasExactly 2) ids)
 
 The `count` version reads slightly cleaner because `count` is the verb the algorithm describes. Either is fine.
 
+### `count` token by token
+
+`count` packs three Haskell fundamentals into two lines: type variables, function-typed arguments, and `(.)` composition. Worth a slow walk.
+
+**Line 1**: `count :: (a -> Bool) -> [a] -> Int`
+
+| Token | What it is | What it means |
+|-------|------------|---------------|
+| `count` | identifier being typed | the name on the left of `::` is what we're declaring |
+| `::` | **"has type"** | type-signature separator |
+| `(` | opens a parenthesised type | groups `a -> Bool` into a single argument type |
+| `a` | **type variable** | lowercase = polymorphic. Stands for "any type, picked by the caller". The same `a` in both occurrences must be the same type — universally quantified |
+| `->` | function arrow (type-level) | inside the parens: separates the input of the inner function from its output |
+| `Bool` | type | `True` or `False` |
+| `)` | closes the parenthesised type | |
+| `->` | function arrow (type-level) | top-level: separates the *first argument* of `count` from the rest |
+| `[a]` | list of `a` | `[]` is the list type constructor; `[a]` means "list whose elements are `a`s" |
+| `->` | function arrow (type-level) | separates the second argument from the result |
+| `Int` | type | the count we return |
+
+So the type reads: *"`count` takes a predicate (a function from `a` to `Bool`), then a list of `a`s, and returns an `Int`."*
+
+#### Why the parens around `(a -> Bool)` matter
+
+`->` is **right-associative**. Without parens:
+
+```haskell
+count :: a -> Bool -> [a] -> Int      -- WRONG TYPE
+```
+
+would parse as `a -> (Bool -> ([a] -> Int))` — a function that takes three separate arguments: an `a`, then a `Bool`, then a `[a]`. Totally different shape from "take a function, then a list."
+
+The parens force the inner `->` to be **inside** the first argument:
+
+```haskell
+count :: (a -> Bool) -> [a] -> Int    -- CORRECT
+```
+
+> **Rule of thumb**: any time an argument is itself a function, parens are mandatory. The compiler will not infer them.
+
+#### Polymorphism in one paragraph
+
+The `a` in `(a -> Bool) -> [a] -> Int` is the same `a` in both places — so if the predicate accepts `Char`, the list must also be `[Char]`. The compiler picks `a` at each call site:
+
+- `count even [1, 2, 3]`     → `a = Int`
+- `count isUpper "Hello"`    → `a = Char`
+- `count null [[1],[],[2]]`  → `a = [Int]`
+
+You write the function once; it works for everything. The Rust analogue would be a generic `fn count<A>(p: impl Fn(&A) -> bool, xs: &[A]) -> usize` — same idea, more ceremony.
+
+**Line 2**: `count p = length . filter p`
+
+| Token | What it is | What it means |
+|-------|------------|---------------|
+| `count` | identifier | must match the type signature |
+| `p` | parameter | the predicate. **Only one parameter named** — the list isn't named. Point-free in the list |
+| `=` | definition | binds the right-hand side to `count p` |
+| `length` | function | `[b] -> Int`, returns the number of elements |
+| `.` | function composition operator | infix. `f . g` means `\x -> f (g x)`. Read **right-to-left** |
+| `filter` | function | `(a -> Bool) -> [a] -> [a]`, keeps elements where the predicate is `True` |
+| `p` | argument to `filter` | partial application: `filter p` has type `[a] -> [a]` |
+
+#### What `(.)` actually does
+
+```haskell
+(.) :: (b -> c) -> (a -> b) -> (a -> c)
+f . g = \x -> f (g x)
+```
+
+It glues two functions end-to-end. `f . g` runs `g` first, then `f` on the result. Reads right-to-left, which feels backwards at first.
+
+For our line:
+
+```
+filter p           :: [a] -> [a]      -- runs first (right side of .)
+length             :: [a] -> Int      -- runs second (left side of .)
+length . filter p  :: [a] -> Int      -- composed
+```
+
+So `count p` returns a function `[a] -> Int`. After supplying `p`, the leftover type is `[a] -> Int` — exactly the tail of the type signature.
+
+#### The verbose, equivalent version
+
+```haskell
+count p xs = length (filter p xs)
+```
+
+Three things changed:
+
+1. The list is now named `xs`.
+2. `filter p xs` is applied first — produces a `[a]`.
+3. `length` is applied to that — produces an `Int`.
+
+Compiles to identical machine code as the `length . filter p` version. The `.` form just hides `xs` because we don't need to name it: the result of `length . filter p` is already a function that's *waiting* for an `xs`.
+
+The pattern:
+
+```haskell
+f x = g (h x)        ===        f = g . h
+```
+
+is the most common "make this point-free" rewrite in Haskell. Once you see it, you'll see it everywhere.
+
+#### Trace on `count (> 3) [1, 5, 2, 4, 9]`
+
+```
+input list:           [1, 5, 2, 4, 9]
+filter (> 3) list:    [5, 4, 9]               (drop 1 and 2; keep 5, 4, 9)
+length [5, 4, 9]:     3
+result:               3
+```
+
+The composition lets us read the algorithm as one breath: *"the count is the length of the filter."*
+
+#### `(.)` vs Rust's method chain
+
+`length . filter p` is exactly Rust's `iter().filter(p).count()`. The dot-chain reads left-to-right because Rust uses *method syntax* (the value flows leftward through `.method()`); Haskell's `.` is a function-composition operator that reads right-to-left because of how `f (g x)` nests in mathematics.
+
+| Rust (left-to-right, method syntax) | Haskell (right-to-left, function composition) |
+|---|---|
+| `xs.iter().filter(p).count()` | `(length . filter p) xs` |
+| `xs.iter().map(f).max()`      | `(maximum . map f) xs` |
+| `xs.iter().filter(p).sum()`   | `(sum . filter p) xs` |
+
+Same algorithm, opposite reading direction. Most Haskellers eventually start *thinking* right-to-left for `.` chains — the `aggregate ← transform ← select` order maps onto how the data flows (rightmost function sees the input first).
+
 ### Why `(hasExactly 2)` and not `hasExactly 2`?
 
 In Haskell, function application is left-associative and tighter than any operator. `count hasExactly 2 ids` would parse as `count(hasExactly)(2)(ids)` — three applications, which is ill-typed. The parens around `(hasExactly 2)` group it into a single one-argument function before passing it to `count`. This is the same partial-application pattern as `captchaSum 1` in Day 0; the parens are just there because the surrounding context wants the whole "predicate" as one syntactic unit.
