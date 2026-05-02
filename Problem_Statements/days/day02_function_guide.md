@@ -456,6 +456,89 @@ A list comprehension — the same shape as `captchaSum`'s in Day 0. Pair up the 
 
 When `differByOne a b` has just returned `True`, exactly 25 of the 26 positions agree, so `commonLetters a b` is the original ID with the one differing position removed — exactly the answer Part 2 wants.
 
+### Reading list comprehensions: `|` is "such that," `<-` is "drawn from"
+
+The bracket notation is borrowed straight from math's set-builder notation. In math, `{ x² | x ∈ ℕ, x < 5 }` reads as *"the set of `x²` **such that** `x` is a natural number and `x < 5`."* Haskell's list comprehension is the same idea:
+
+```haskell
+[ x*x | x <- [0..4] ]      -- ⟶ [0, 1, 4, 9, 16]
+   ↑    ↑   ↑
+   |    |   "drawn from"
+   |    "such that"
+   "yield x*x for each iteration"
+```
+
+The general shape is always:
+
+```haskell
+[ <yield-expression>
+| <generator or filter>
+, <generator or filter>
+, ...
+]
+```
+
+| Symbol | Read as | What it does |
+|--------|---------|--------------|
+| `[ … \| … ]` | square brackets | bracket the whole comprehension |
+| `\|` | **"such that"** / **"where"** | separates the *yield* (left) from the *clauses* (right) |
+| `<-` | **"drawn from"** | a **generator**: each value from the right binds the pattern on the left, then iterates |
+| `,` (between clauses) | **"and"** | separates clauses on the right of the `\|` |
+| a bare `Bool` expression (no `<-`) | a **filter** | drops the iteration if `False`, continues if `True` |
+
+Apply it to `commonLetters`:
+
+```haskell
+[ x | (x, y) <- zip a b , x == y ]
+   ↑     ↑       ↑          ↑
+yield  pattern  drawn      filter
+       (destructures        (keeps positions
+        each tuple)          where x equals y)
+```
+
+Reads as: *"yield `x`, such that `(x, y)` is drawn from `zip a b`, and `x == y`."*
+
+### Multiple generators stack into nested loops
+
+Each generator iterates *inside* the previous one — the right-most varies fastest. `part2`'s comprehension (next section) uses this:
+
+```haskell
+[ commonLetters a b              -- yield this expression …
+| (a : rest) <- tails ids        -- … such that (a : rest) is drawn from tails ids,  ← OUTER loop
+, b          <- rest             --   and b           is drawn from rest,            ← INNER loop
+, differByOne a b                --   and differByOne a b is True                    ← FILTER
+]
+```
+
+Three clauses — two generators (nested loops) and one filter. Each clause sees the bindings from clauses *above* it: `b` can mention `rest` because `rest` was just bound, and `differByOne a b` can mention both because both were bound earlier. **Order matters on the right of the `|`.**
+
+Equivalent imperative pseudocode:
+
+```python
+results = []
+for (a, *rest) in tails(ids):       # outer generator
+    for b in rest:                  # inner generator
+        if differ_by_one(a, b):     # filter
+            results.append(common_letters(a, b))    # yield
+```
+
+Once the comprehension shape is in your head, the imperative-translation step becomes automatic — you read `[ X | Y <- ys, Z <- zs, P ]` as a doubly-nested loop with a filter, in that exact order, every time.
+
+### Why `head` on a comprehension does early-exit
+
+Lists in Haskell are lazy — `[…]` is not built all at once. Each cons cell `x : rest` is just a recipe with `rest` left as an unevaluated thunk. `head` forces only the first cons cell, then returns. The thunk for the rest of the list is never demanded, so the generators never iterate further.
+
+Operationally that means:
+
+1. The comprehension starts iterating: outer suffix, inner `b`, run `differByOne`. False → skip.
+2. … keeps going through pairs in nesting order …
+3. The first time `differByOne a b` is `True`, the comprehension yields `commonLetters a b` as the **first cons cell** of the output list. The tail is a thunk: *"if you ask, I'll keep searching from this point."*
+4. `head` extracts the first element and returns. **Nobody asks the thunk.** The remaining outer/inner iterations never run.
+
+This is the same lazy-short-circuit mechanism that lets Day 1's `firstDup` find a duplicate in an *infinite* `cycle`-based stream. Read declaratively, written declaratively, executed with operational early-exit. Once you trust laziness, you stop writing `break`/`return` because the consumer's demand controls how far the producer runs.
+
+The Rust analogue would be `find_map` over chained iterators — explicit early exit. Haskell's version is implicit; the early exit lives in *how* `head` and the comprehension talk to each other, not in the comprehension itself.
+
 ---
 
 ## `part2` — the pair search
