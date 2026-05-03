@@ -816,4 +816,4 @@ For this puzzle Rust would be ~5× faster end-to-end, dominated by `String` vs `
 
 ---
 
-**Navigation**: [Problem statement](day02.md) | [Summary table](summary_2018.md) | [← Day 1](day01_function_guide.md) | Day 3 → *(not yet attempted)*
+**Navigation**: [Problem statement](day02.md) | [Summary table](summary_2018.md) | [← Day 1](day01_function_guide.md) | [Day 3 →](day03_function_guide.md)

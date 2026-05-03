@@ -1,6 +1,6 @@
 # Advent of Code 2018 — Haskell Solutions Summary
 
-**Status**: IN PROGRESS (3/26, including the Day 0 warm-up)
+**Status**: IN PROGRESS (4/26, including the Day 0 warm-up)
 **Project**: [aoc2018.cabal](../../aoc2018.cabal) — single cabal package, library modules `Day00..Day25` in [src/](../../src/), dispatcher [app/Main.hs](../../app/Main.hs), tests in [test/](../../test/), benches in [bench/](../../bench/).
 
 **Run a day**: `cabal run aoc2018-solve -- <n>` (reads `inputs/day<nn>.txt`).
@@ -13,9 +13,9 @@
 
 | Metric | Value |
 |--------|-------|
-| **Progress** | 3/26 (Day 0 warm-up + Days 1–2 done; Days 3–25 pending) |
-| **Total Runtime** | 38.0 ms (Days 0–2) |
-| **Average per Day** | 12.7 ms |
+| **Progress** | 4/26 (Day 0 warm-up + Days 1–3 done; Days 4–25 pending) |
+| **Total Runtime** | 388.0 ms (Days 0–3) |
+| **Average per Day** | 97.0 ms |
 
 ---
 
@@ -28,7 +28,7 @@ Reported on a Windows 11 / GHC 9.6.7 / `-O2` build via `cabal bench` (criterion)
 | [00](day00_function_guide.md) | Inverse Captcha (warm-up, AoC 2017 Day 1) | 17.5 µs | 11.2 µs | 14.9 µs | 43.6 µs | Modular circular comparison | `zip ds (rotate k ds)` substitutes for indexed access; offset = 1 (P1) and n/2 (P2). |
 | [01](day01_function_guide.md) | Chronal Calibration | 629.6 µs | 1.3 µs | 35.79 ms | 36.4 ms | Sum (P1); first-repeat search over `scanl (+) 0 (cycle deltas)` with `Data.Set` (P2) | Lazy infinite list pays off — `firstDup` consumes only as much of the running-total stream as it needs. |
 | [02](day02_function_guide.md) | Inventory Management System | 84.7 µs | 439.9 µs | 1.02 ms | 1.54 ms | Frequency `Map.insertWith (+)` (P1); `tails`-based pair search with lazy short-circuit (P2) | First use of `Data.Map.Strict`; first day with a `String` answer (Part 2 = `tiwcdpbseqhxryfmgkvjujvza`). |
-|  3 | *not yet attempted* | — | — | — | — | — | — |
+| [03](day03_function_guide.md) | No Matter How You Slice It | 4.05 ms | 175.1 ms | 170.8 ms | 350.0 ms | `Map.fromListWith (+)` over `(x,y)` keys to build a fabric frequency map; Part 2 finds the unique claim with all squares mapped to 1 | First record type (`Claim` with `!Int` fields + manual `NFData`); both parts independently rebuild the 130k-entry map — sharing it would halve the runtime (see function-guide sidebar). |
 |  4 | *not yet attempted* | — | — | — | — | — | — |
 |  5 | *not yet attempted* | — | — | — | — | — | — |
 |  6 | *not yet attempted* | — | — | — | — | — | — |
@@ -61,6 +61,7 @@ Reported on a Windows 11 / GHC 9.6.7 / `-O2` build via `cabal bench` (criterion)
 | [00](day00_function_guide.md) | Inverse Captcha | **1171** | **1024** |
 | [01](day01_function_guide.md) | Chronal Calibration | **576** | **77674** |
 | [02](day02_function_guide.md) | Inventory Management System | **5880** | **`tiwcdpbseqhxryfmgkvjujvza`** |
+| [03](day03_function_guide.md) | No Matter How You Slice It | **111485** | **113** |
 
 (Filled in as days are solved; pending days omitted from this table.)
 
