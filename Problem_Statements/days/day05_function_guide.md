@@ -400,4 +400,4 @@ The other difference is eagerness: Rust's `react` builds the whole stack eagerly
 
 ---
 
-**Navigation**: [Problem statement](day05.md) | [Summary table](summary_2018.md) | [<- Day 4](day04_function_guide.md) | Day 6 -> *(not yet attempted)*
+**Navigation**: [Problem statement](day05.md) | [Summary table](summary_2018.md) | [<- Day 4](day04_function_guide.md) | [Day 6 ->](day06_function_guide.md)

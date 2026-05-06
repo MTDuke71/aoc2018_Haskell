@@ -36,6 +36,7 @@ import qualified Day02
 import qualified Day03
 import qualified Day04
 import qualified Day05
+import qualified Day06
 
 -- | One day's bgroup. Reads the input, forces parsing once via 'env'
 -- so per-bench timings are not polluted by the parse, then registers
@@ -71,5 +72,6 @@ main = defaultMain
   , dayBench "day03" "inputs/day03.txt" Day03.parseInput Day03.part1 Day03.part2
   , dayBench "day04" "inputs/day04.txt" Day04.parseInput Day04.part1 Day04.part2
   , dayBench "day05" "inputs/day05.txt" Day05.parseInput Day05.part1 Day05.part2
+  , dayBench "day06" "inputs/day06.txt" Day06.parseInput Day06.part1 Day06.part2
   -- new days drop in here as they are solved.
   ]

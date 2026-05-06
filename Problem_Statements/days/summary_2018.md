@@ -1,6 +1,6 @@
 # Advent of Code 2018 — Haskell Solutions Summary
 
-**Status**: IN PROGRESS (4/26, including the Day 0 warm-up)
+**Status**: IN PROGRESS (7/26, including the Day 0 warm-up)
 **Project**: [aoc2018.cabal](../../aoc2018.cabal) — single cabal package, library modules `Day00..Day25` in [src/](../../src/), dispatcher [app/Main.hs](../../app/Main.hs), tests in [test/](../../test/), benches in [bench/](../../bench/).
 
 **Run a day**: `cabal run aoc2018-solve -- <n>` (reads `inputs/day<nn>.txt`).
@@ -13,9 +13,9 @@
 
 | Metric | Value |
 |--------|-------|
-| **Progress** | 6/26 (Day 0 warm-up + Days 1–5 done; Days 6–25 pending) |
-| **Total Runtime** | 440.2 ms (Days 0–5) |
-| **Average per Day** | 73.4 ms |
+| **Progress** | 7/26 (Day 0 warm-up + Days 1–6 done; Days 7–25 pending) |
+| **Total Runtime** | 599.2 ms (Days 0–6) |
+| **Average per Day** | 85.6 ms |
 
 ---
 
@@ -31,7 +31,7 @@ Reported on a Windows 11 / GHC 9.6.7 / `-O2` build via `cabal bench` (criterion)
 | [03](day03_function_guide.md) | No Matter How You Slice It | 4.05 ms | 175.1 ms | 170.8 ms | 350.0 ms | `Map.fromListWith (+)` over `(x,y)` keys to build a fabric frequency map; Part 2 finds the unique claim with all squares mapped to 1 | First record type (`Claim` with `!Int` fields + manual `NFData`); both parts independently rebuild the 130k-entry map — sharing it would halve the runtime (see function-guide sidebar). |
 | [04](day04_function_guide.md) | Repose Record | 2.81 ms | 45.5 µs | 256 µs | 3.11 ms | Lexicographic sort of ISO timestamps; tail-recursive `go` accumulator builds `Map Int [Int]`; `maximumBy (comparing ...)` for both strategies | Sort step dominates parse time; post-parse work is µs-fast. First sum type (`Event`). |
 | [05](day05_function_guide.md) | Alchemical Reduction | 344 µs | 1.04 ms | 47.7 ms | 49.1 ms | `foldl'`-as-stack reactor (P1); 26 independent reactor passes across `'a'..'z'` (P2) | Part 2 is exactly 26× Part 1 by construction; only algorithmic improvement (single-pass removal) would cut it. First day where Part 2 dominates by 40×. |
-|  6 | *not yet attempted* | — | — | — | — | — | — |
+| [06](day06_function_guide.md) | Chronal Coordinates | 53.2 µs | 142.5 ms | 16.5 ms | 159.0 ms | Bounding-box Manhattan-distance Voronoi: per-cell `sort` + tie-on-head (P1); per-cell sum-of-distances threshold (P2) | Border-touching ⇒ infinite area is the trick that turns an infinite plane into a 304×308 grid; `closest` could drop ~110 ms by replacing per-cell `sort` with a two-min linear scan. |
 |  7 | *not yet attempted* | — | — | — | — | — | — |
 |  8 | *not yet attempted* | — | — | — | — | — | — |
 |  9 | *not yet attempted* | — | — | — | — | — | — |
@@ -64,6 +64,7 @@ Reported on a Windows 11 / GHC 9.6.7 / `-O2` build via `cabal bench` (criterion)
 | [03](day03_function_guide.md) | No Matter How You Slice It | **111485** | **113** |
 | [04](day04_function_guide.md) | Repose Record | **85296** | **58559** |
 | [05](day05_function_guide.md) | Alchemical Reduction | **11264** | **4552** |
+| [06](day06_function_guide.md) | Chronal Coordinates | **4233** | **45290** |
 
 (Filled in as days are solved; pending days omitted from this table.)
 
