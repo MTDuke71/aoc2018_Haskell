@@ -471,4 +471,4 @@ Both implementations sort 50 distances per cell and walk the same grid. The Rust
 
 ---
 
-**Navigation**: [Problem statement](day06.md) | [Summary table](summary_2018.md) | [<- Day 5](day05_function_guide.md) | Day 7 -> *(not yet attempted)*
+**Navigation**: [Problem statement](day06.md) | [Summary table](summary_2018.md) | [<- Day 5](day05_function_guide.md) | [Day 7 ->](day07_function_guide.md)
