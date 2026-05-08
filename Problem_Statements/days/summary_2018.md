@@ -1,6 +1,6 @@
 # Advent of Code 2018 — Haskell Solutions Summary
 
-**Status**: IN PROGRESS (8/26, including the Day 0 warm-up)
+**Status**: IN PROGRESS (9/26, including the Day 0 warm-up)
 **Project**: [aoc2018.cabal](../../aoc2018.cabal) — single cabal package, library modules `Day00..Day25` in [src/](../../src/), dispatcher [app/Main.hs](../../app/Main.hs), tests in [test/](../../test/), benches in [bench/](../../bench/).
 
 **Run a day**: `cabal run aoc2018-solve -- <n>` (reads `inputs/day<nn>.txt`).
@@ -13,9 +13,9 @@
 
 | Metric | Value |
 |--------|-------|
-| **Progress** | 8/26 (Day 0 warm-up + Days 1–7 done; Days 8–25 pending) |
-| **Total Runtime** | 599.4 ms (Days 0–7) |
-| **Average per Day** | 74.9 ms |
+| **Progress** | 9/26 (Day 0 warm-up + Days 1–8 done; Days 9–25 pending) |
+| **Total Runtime** | 607.7 ms (Days 0–8) |
+| **Average per Day** | 67.5 ms |
 
 ---
 
@@ -33,7 +33,7 @@ Reported on a Windows 11 / GHC 9.6.7 / `-O2` build via `cabal bench` (criterion)
 | [05](day05_function_guide.md) | Alchemical Reduction | 344 µs | 1.04 ms | 47.7 ms | 49.1 ms | `foldl'`-as-stack reactor (P1); 26 independent reactor passes across `'a'..'z'` (P2) | Part 2 is exactly 26× Part 1 by construction; only algorithmic improvement (single-pass removal) would cut it. First day where Part 2 dominates by 40×. |
 | [06](day06_function_guide.md) | Chronal Coordinates | 53.2 µs | 142.5 ms | 16.5 ms | 159.0 ms | Bounding-box Manhattan-distance Voronoi: per-cell `sort` + tie-on-head (P1); per-cell sum-of-distances threshold (P2) | Border-touching ⇒ infinite area is the trick that turns an infinite plane into a 304×308 grid; `closest` could drop ~110 ms by replacing per-cell `sort` with a two-min linear scan. |
 | [07](day07_function_guide.md) | The Sum of Its Parts | 122.9 µs | 12.0 µs | 17.5 µs | 152.4 µs | Topological sort by repeated alphabetical-priority pick (P1); discrete-event 5-worker simulation, jumping to the next finish time (P2) | `Map Char (Set Char)` of prereqs doubles as ready-queue (empty value ⇒ ready) and as the "delete me from everyone" target on completion. Part 1 median of 3 runs (first was 13.45 µs / 91 % variance — warm-up noise). |
-|  8 | *not yet attempted* | — | — | — | — | — | — |
+| [08](day08_function_guide.md) | Memory Maneuver | 8.30 ms | 22.2 µs | 10.7 µs | 8.33 ms | Recursive descent over a flat `[Int]`, threading `(result, leftover)` through tuple returns; Part 2 indexes children via `zip [1..]` + `lookup` + `mapMaybe` | First recursive ADT (`Tree`); first hand-rolled state-threading parser (the manual `State` monad). Parse is ~99 % of total runtime — `read :: String -> Int` over ~6500 tokens dominates. |
 |  9 | *not yet attempted* | — | — | — | — | — | — |
 | 10 | *not yet attempted* | — | — | — | — | — | — |
 | 11 | *not yet attempted* | — | — | — | — | — | — |
@@ -66,6 +66,7 @@ Reported on a Windows 11 / GHC 9.6.7 / `-O2` build via `cabal bench` (criterion)
 | [05](day05_function_guide.md) | Alchemical Reduction | **11264** | **4552** |
 | [06](day06_function_guide.md) | Chronal Coordinates | **4233** | **45290** |
 | [07](day07_function_guide.md) | The Sum of Its Parts | **`GDHOSUXACIMRTPWNYJLEQFVZBK`** | **1024** |
+| [08](day08_function_guide.md) | Memory Maneuver | **41521** | **19990** |
 
 (Filled in as days are solved; pending days omitted from this table.)
 

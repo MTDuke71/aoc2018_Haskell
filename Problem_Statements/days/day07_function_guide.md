@@ -501,4 +501,4 @@ Both versions are about 45--50 lines of core algorithm. The Rust version mutates
 
 ---
 
-**Navigation**: [Problem statement](day07.md) | [Summary table](summary_2018.md) | [<- Day 6](day06_function_guide.md) | Day 8 -> *(not yet attempted)*
+**Navigation**: [Problem statement](day07.md) | [Summary table](summary_2018.md) | [<- Day 6](day06_function_guide.md) | [Day 8 ->](day08_function_guide.md)
