@@ -555,4 +555,4 @@ The most interesting line is `child_values.get(idx).copied()` vs `lookup i index
 
 ---
 
-**Navigation**: [Problem statement](day08.md) | [Summary table](summary_2018.md) | [<- Day 7](day07_function_guide.md) | Day 9 -> *(not yet attempted)*
+**Navigation**: [Problem statement](day08.md) | [Summary table](summary_2018.md) | [<- Day 7](day07_function_guide.md) | [Day 9 ->](day09_function_guide.md)
