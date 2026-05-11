@@ -40,6 +40,7 @@ import qualified Day06
 import qualified Day07
 import qualified Day08
 import qualified Day09
+import qualified Day10
 
 -- | One day's bgroup. Reads the input, forces parsing once via 'env'
 -- so per-bench timings are not polluted by the parse, then registers
@@ -79,5 +80,16 @@ main = defaultMain
   , dayBench "day07" "inputs/day07.txt" Day07.parseInput Day07.part1 Day07.part2
   , dayBench "day08" "inputs/day08.txt" Day08.parseInput Day08.part1 Day08.part2
   , dayBench "day09" "inputs/day09.txt" Day09.parseInput Day09.part1 Day09.part2
+  , dayBench "day10" "inputs/day10.txt" Day10.parseInput Day10.part1 Day10.part2
+  -- Day 10 has two findMessage algorithms; bench them side by side so
+  -- the function-guide table can quote concrete numbers.  Linear vs
+  -- ternary search, both on the same parsed input.
+  , env (do raw <- readFile "inputs/day10.txt"
+            let p = Day10.parseInput raw
+            return p) $ \p ->
+      bgroup "day10/findMessage"
+        [ bench "linear scan" $ nf Day10.findMessage        p
+        , bench "ternary"     $ nf Day10.findMessageTernary p
+        ]
   -- new days drop in here as they are solved.
   ]

@@ -1,6 +1,6 @@
 # Advent of Code 2018 — Haskell Solutions Summary
 
-**Status**: IN PROGRESS (10/26, including the Day 0 warm-up)
+**Status**: IN PROGRESS (11/26, including the Day 0 warm-up)
 **Project**: [aoc2018.cabal](../../aoc2018.cabal) — single cabal package, library modules `Day00..Day25` in [src/](../../src/), dispatcher [app/Main.hs](../../app/Main.hs), tests in [test/](../../test/), benches in [bench/](../../bench/).
 
 **Run a day**: `cabal run aoc2018-solve -- <n>` (reads `inputs/day<nn>.txt`).
@@ -13,9 +13,9 @@
 
 | Metric | Value |
 |--------|-------|
-| **Progress** | 10/26 (Day 0 warm-up + Days 1–9 done; Days 10–25 pending) |
-| **Total Runtime** | 653.65 ms (Days 0–9) |
-| **Average per Day** | 65.4 ms |
+| **Progress** | 11/26 (Day 0 warm-up + Days 1–10 done; Days 11–25 pending) |
+| **Total Runtime** | 743.5 ms (Days 0–10) |
+| **Average per Day** | 67.6 ms |
 
 ---
 
@@ -35,7 +35,7 @@ Reported on a Windows 11 / GHC 9.6.7 / `-O2` build via `cabal bench` (criterion)
 | [07](day07_function_guide.md) | The Sum of Its Parts | 122.9 µs | 12.0 µs | 17.5 µs | 152.4 µs | Topological sort by repeated alphabetical-priority pick (P1); discrete-event 5-worker simulation, jumping to the next finish time (P2) | `Map Char (Set Char)` of prereqs doubles as ready-queue (empty value ⇒ ready) and as the "delete me from everyone" target on completion. Part 1 median of 3 runs (first was 13.45 µs / 91 % variance — warm-up noise). |
 | [08](day08_function_guide.md) | Memory Maneuver | 8.30 ms | 22.2 µs | 10.7 µs | 8.33 ms | Recursive descent over a flat `[Int]`, threading `(result, leftover)` through tuple returns; Part 2 indexes children via `zip [1..]` + `lookup` + `mapMaybe` | First recursive ADT (`Tree`); first hand-rolled state-threading parser (the manual `State` monad). Parse is ~99 % of total runtime — `read :: String -> Int` over ~6500 tokens dominates. |
 | [09](day09_function_guide.md) | Marble Mania | 1.41 µs | 407.2 µs | 45.5 ms | 45.95 ms | Doubly-linked list as two `STUArray s Int Int` index arrays inside `runST`; tail-recursive `go` with `BangPatterns` to keep the 7M-iteration inner loop allocation-free | First `ST` monad / scoped mutation; `ScopedTypeVariables` to bring the region tag `s` into scope inside the body. Part 2 simulates 7,173,000 placements at ~6.4 ns/marble. |
-| 10 | *not yet attempted* | — | — | — | — | — | — |
+| [10](day10_function_guide.md) | The Stars Align | 1.25 ms | 45.79 ms | 42.81 ms | 89.85 ms | Step until the bounding-box area would grow (quasi-convex search); `Set` of occupied `(x, y)` for sparse-grid rendering; single-pass `foldl'` threading four extrema through a 4-tuple | First multi-line `String` answer (Part 1 returns the rendered ASCII picture; the human reads `JLPZFJRH` off it). Part 1 ≈ Part 2 because both independently re-run the search; `solve` shares the search via a `let` binding. |
 | 11 | *not yet attempted* | — | — | — | — | — | — |
 | 12 | *not yet attempted* | — | — | — | — | — | — |
 | 13 | *not yet attempted* | — | — | — | — | — | — |
@@ -68,6 +68,7 @@ Reported on a Windows 11 / GHC 9.6.7 / `-O2` build via `cabal bench` (criterion)
 | [07](day07_function_guide.md) | The Sum of Its Parts | **`GDHOSUXACIMRTPWNYJLEQFVZBK`** | **1024** |
 | [08](day08_function_guide.md) | Memory Maneuver | **41521** | **19990** |
 | [09](day09_function_guide.md) | Marble Mania | **380705** | **3171801582** |
+| [10](day10_function_guide.md) | The Stars Align | **`JLPZFJRH`** (rendered ASCII) | **10595** |
 
 (Filled in as days are solved; pending days omitted from this table.)
 
