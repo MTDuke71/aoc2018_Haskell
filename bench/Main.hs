@@ -41,6 +41,7 @@ import qualified Day07
 import qualified Day08
 import qualified Day09
 import qualified Day10
+import qualified Day11
 
 -- | One day's bgroup. Reads the input, forces parsing once via 'env'
 -- so per-bench timings are not polluted by the parse, then registers
@@ -91,5 +92,6 @@ main = defaultMain
         [ bench "linear scan" $ nf Day10.findMessage        p
         , bench "ternary"     $ nf Day10.findMessageTernary p
         ]
+  , dayBench "day11" "inputs/day11.txt" Day11.parseInput Day11.part1 Day11.part2
   -- new days drop in here as they are solved.
   ]

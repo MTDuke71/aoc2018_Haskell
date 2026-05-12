@@ -610,4 +610,4 @@ The most interesting structural difference is *how the step-until-grow loop is w
 
 ---
 
-**Navigation**: [Problem statement](day10.md) | [Summary table](summary_2018.md) | [<- Day 9](day09_function_guide.md) | Day 11 -> *(not yet attempted)*
+**Navigation**: [Problem statement](day10.md) | [Summary table](summary_2018.md) | [<- Day 9](day09_function_guide.md) | [Day 11 ->](day11_function_guide.md)
