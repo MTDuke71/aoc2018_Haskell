@@ -672,4 +672,4 @@ The SAT we built today is read-only after `parseInput`.  If a puzzle needs the g
 
 ---
 
-**Navigation**: [Problem statement](day11.md) | [Summary table](summary_2018.md) | [<- Day 10](day10_function_guide.md) | Day 12 -> *(not yet attempted)*
+**Navigation**: [Problem statement](day11.md) | [Summary table](summary_2018.md) | [<- Day 10](day10_function_guide.md) | [Day 12 ->](day12_function_guide.md)

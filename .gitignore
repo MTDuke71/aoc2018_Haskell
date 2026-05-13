@@ -47,6 +47,10 @@ hie.yaml.local
 Thumbs.db
 desktop.ini
 
+# --- Python (algorithm-reference solutions in python/) ---
+__pycache__/
+*.pyc
+
 # --- Claude Code (machine-specific) ---
 .claude/
 
