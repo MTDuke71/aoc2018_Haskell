@@ -91,6 +91,7 @@ test-suite aoc2018-test
                       , Day25Spec
     build-depends:      base
                       , aoc2018
+                      , array      >= 0.5  && < 0.6
                       , containers >= 0.6  && < 0.8
                       , hspec      >= 2.10 && < 2.12
     build-tool-depends: hspec-discover:hspec-discover >= 2.10 && < 2.12

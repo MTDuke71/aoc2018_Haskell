@@ -1,6 +1,6 @@
 # Advent of Code 2018 — Haskell Solutions Summary
 
-**Status**: IN PROGRESS (13/26, including the Day 0 warm-up)
+**Status**: IN PROGRESS (14/26, including the Day 0 warm-up)
 **Project**: [aoc2018.cabal](../../aoc2018.cabal) — single cabal package, library modules `Day00..Day25` in [src/](../../src/), dispatcher [app/Main.hs](../../app/Main.hs), tests in [test/](../../test/), benches in [bench/](../../bench/).
 
 **Run a day**: `cabal run aoc2018-solve -- <n>` (reads `inputs/day<nn>.txt`).
@@ -13,9 +13,9 @@
 
 | Metric | Value |
 |--------|-------|
-| **Progress** | 13/26 (Day 0 warm-up + Days 1–12 done; Days 13–25 pending) |
-| **Total Runtime** | 825.9 ms (Days 0–12) |
-| **Average per Day** | 63.5 ms |
+| **Progress** | 14/26 (Day 0 warm-up + Days 1–13 done; Days 14–25 pending) |
+| **Total Runtime** | 833.6 ms (Days 0–13) |
+| **Average per Day** | 59.5 ms |
 
 ---
 
@@ -38,7 +38,7 @@ Reported on a Windows 11 / GHC 9.6.7 / `-O2` build via `cabal bench` (criterion)
 | [10](day10_function_guide.md) | The Stars Align | 1.25 ms | 45.79 ms | 42.81 ms | 89.85 ms | Step until the bounding-box area would grow (quasi-convex search); `Set` of occupied `(x, y)` for sparse-grid rendering; single-pass `foldl'` threading four extrema through a 4-tuple | First multi-line `String` answer (Part 1 returns the rendered ASCII picture; the human reads `JLPZFJRH` off it). Part 1 ≈ Part 2 because both independently re-run the search; `solve` shares the search via a `let` binding. |
 | [11](day11_function_guide.md) | Chronal Charge | 394.8 µs | 1.665 ms | 77.24 ms | 79.30 ms | Summed-area table built in `runSTUArray` (Parse cost); Part 1 sweeps all 88 k 3×3 squares; Part 2 sweeps all ~9.04 M `(x,y,s)` triples with O(1) per-square inclusion-exclusion | First 2D unboxed `UArray (Int,Int) Int`; first `runSTUArray` to freeze a mutable build into an immutable query target; `newtype Puzzle` to attach a hand-rolled `NFData` instance (the deepseq package ships no `NFData (UArray i e)`). SAT collapses naive O(N⁵)≈8.3×10¹⁰ cell adds to O(N³)≈9×10⁶ lookups (~10,000× speedup). |
 | [12](day12_function_guide.md) | Subterranean Sustainability | 8.92 µs | 290.4 µs | 2.806 ms | 3.11 ms | 1-D cellular automaton on `Set Int` of live pots (P1); period-1 fixed-point detection on the normalised shape + arithmetic projection to 5×10¹⁰ generations (P2) | First CA puzzle; `Set.mapMonotonic` for `O(n)` translation of a live set; translation-equivariance of local rules is what makes the extrapolation exact. Brute-force Part 2 would take ~8.6 years; cycle detection finishes in 2.8 ms by exiting the simulator around gen ~100. |
-| 13 | *not yet attempted* | — | — | — | — | — | — |
+| [13](day13_function_guide.md) | Mine Cart Madness | 1.374 ms | 292.8 µs | 6.066 ms | 7.73 ms | Reading-order asynchronous discrete-event simulation; `IntMap` of carts by id + `Map (Int,Int) Int` of pos→id, maintained as a single invariant; `sortOn (cartY, cartX)` per tick for reading order | First asynchronous-update puzzle (contrast Day 12's synchronous CA); first two-map agent-state pattern (id-keyed population + pos-keyed lookup); enum-style `Dir`/`Turn` ADTs with truth-table function definitions. Part 2 ~17,500 ticks until one survivor remains. |
 | 14 | *not yet attempted* | — | — | — | — | — | — |
 | 15 | *not yet attempted* | — | — | — | — | — | — |
 | 16 | *not yet attempted* | — | — | — | — | — | — |
@@ -71,6 +71,7 @@ Reported on a Windows 11 / GHC 9.6.7 / `-O2` build via `cabal bench` (criterion)
 | [10](day10_function_guide.md) | The Stars Align | **`JLPZFJRH`** (rendered ASCII) | **10595** |
 | [11](day11_function_guide.md) | Chronal Charge | **`20,41`** | **`236,270,11`** |
 | [12](day12_function_guide.md) | Subterranean Sustainability | **3230** | **4400000000304** |
+| [13](day13_function_guide.md) | Mine Cart Madness | **`118,66`** | **`70,129`** |
 
 (Filled in as days are solved; pending days omitted from this table.)
 

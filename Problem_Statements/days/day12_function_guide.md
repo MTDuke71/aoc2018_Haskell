@@ -861,4 +861,4 @@ Cellular automata, fixed-point detection, and the algebra of local rules.
 
 ---
 
-**Navigation**: [Problem statement](day12.md) | [Summary table](summary_2018.md) | [<- Day 11](day11_function_guide.md) | Day 13 -> *(not yet attempted)*
+**Navigation**: [Problem statement](day12.md) | [Summary table](summary_2018.md) | [<- Day 11](day11_function_guide.md) | [Day 13 ->](day13_function_guide.md)

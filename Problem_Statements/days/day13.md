@@ -28,7 +28,7 @@ Intersections occur when two perpendicular paths cross. At an intersection, a ca
 
 ```
 
-Several *carts* are also on the tracks. Carts always face either up (`^`), down (`v`), left (``). (On your initial map, the track under each cart is a straight path matching the direction the cart is facing.)
+Several *carts* are also on the tracks. Carts always face either up (`^`), down (`v`), left (<), or right (>). (On your initial map, the track under each cart is a straight path matching the direction the cart is facing.)
 
 Each time a cart has the option to turn (by arriving at any intersection), it turns *left* the first time, goes *straight* the second time, turns *right* the third time, and then repeats those directions starting again with *left* the fourth time, *straight* the fifth time, and so on. This process is independent of the particular intersection at which the cart has arrived - that is, the cart has no per-intersection memory.
 
@@ -171,6 +171,54 @@ After following their respective paths for a while, the carts eventually crash. 
 ```
 
 In this example, the location of the first crash is `*7,3*`.
+
+---
+
+--- Part Two ---
+There isn't much you can do to prevent crashes in this ridiculous system. However, by predicting the crashes, the Elves know where to be in advance and instantly remove the two crashing carts the moment any crash occurs.
+
+They can proceed like this for a while, but eventually, they're going to run out of carts. It could be useful to figure out where the last cart that hasn't crashed will end up.
+
+For example:
+
+```
+/>-<\
+|   |
+| /<+-\
+| | | v
+\>+</ |
+  |   ^
+  \<->/
+
+/---\
+|   |
+| v-+-\
+| | | |
+\-+-/ |
+  |   |
+  ^---^
+
+/---\
+|   |
+| /-+-\
+| v | |
+\-+-/ |
+  ^   ^
+  \---/
+
+/---\
+|   |
+| /-+-\
+| | | |
+\-+-/ ^
+  |   |
+  \---/
+
+```
+
+After four very expensive crashes, a tick ends with only one cart remaining; its current location is `*6,4*`.
+
+*What is the location of the last cart* at the end of the first tick where it is the only cart left?
 
 ---
 
