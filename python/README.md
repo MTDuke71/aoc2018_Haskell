@@ -24,5 +24,6 @@ The Python is the spec; the Haskell is the main solve. When a function guide say
 |----:|-------|:------:|:-------:|:--------------:|
 | 12 | Subterranean Sustainability | [day12.py](day12.py) | [Day12.hs](../src/Day12.hs) | [day12_trace.py](day12_trace.py) — prints normalised pattern + shift per generation until the spaceship locks in |
 | 13 | Mine Cart Madness | [day13.py](day13.py) | [Day13.hs](../src/Day13.hs) | — |
+| 14 | Chocolate Charts | [day14.py](day14.py) | [Day14.hs](../src/Day14.hs) | — |
 
 (Earlier days will be backfilled on demand.)

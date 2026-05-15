@@ -1006,4 +1006,4 @@ Discrete-event simulators, reading-order semantics, and asynchronous cellular au
 
 ---
 
-**Navigation**: [Problem statement](day13.md) | [Summary table](summary_2018.md) | [<- Day 12](day12_function_guide.md) | Day 14 -> *(not yet attempted)*
+**Navigation**: [Problem statement](day13.md) | [Summary table](summary_2018.md) | [<- Day 12](day12_function_guide.md) | [Day 14 ->](day14_function_guide.md)
