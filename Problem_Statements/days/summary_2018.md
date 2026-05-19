@@ -1,6 +1,6 @@
 # Advent of Code 2018 — Haskell Solutions Summary
 
-**Status**: IN PROGRESS (18/26, including the Day 0 warm-up)
+**Status**: IN PROGRESS (19/26, including the Day 0 warm-up)
 **Project**: [aoc2018.cabal](../../aoc2018.cabal) — single cabal package, library modules `Day00..Day25` in [src/](../../src/), dispatcher [app/Main.hs](../../app/Main.hs), tests in [test/](../../test/), benches in [bench/](../../bench/).
 
 **Run a day**: `cabal run aoc2018-solve -- <n>` (reads `inputs/day<nn>.txt`).
@@ -13,9 +13,9 @@
 
 | Metric | Value |
 |--------|-------|
-| **Progress** | 18/26 (Day 0 warm-up + Days 1–17 done; Days 18–25 pending) |
-| **Total Runtime** | 3565.9 ms (Days 0–17) |
-| **Average per Day** | 198.1 ms |
+| **Progress** | 19/26 (Day 0 warm-up + Days 1–18 done; Days 19–25 pending) |
+| **Total Runtime** | 3640.6 ms (Days 0–18) |
+| **Average per Day** | 191.6 ms |
 
 ---
 
@@ -43,7 +43,7 @@ Reported on a Windows 11 / GHC 9.6.7 / `-O2` build via `cabal bench` (criterion)
 | [15](day15_function_guide.md) | Beverage Bandits | 37.3 µs | 231.6 ms | 2.212 s | 2.44 s | BFS shortest-path on the live board with strict reading-order (lexicographic `(y,x)`) tie-breaking; two BFS per moving unit (one to pick the destination, one from it to pick the first step); Part 2 = linear search over Elf attack power with early-abort on the first Elf death | Slowest day so far. Every tie-break collapses to `minimum`/`sortOn` because positions are stored `(y,x)` and the derived tuple `Ord` *is* reading order. `Map`-based BFS dominates; an unboxed-array distance buffer would cut ~10× (documented as a function-guide sidebar). 14 pinned test cases (the narrated battle + 5 summarized combats + 4 Part-2 searches) because a wrong tie-break passes the easy example and fails the hard one. |
 | [16](day16_function_guide.md) | Chronal Classification | 8.61 ms | 647 µs | 802 µs | 10.06 ms | Behavioural opcode matching against a 16-op ALU written as one pure `Op -> operands -> Regs -> Regs` function; Part 2 deduces code→op by constraint intersection then naked-singleton elimination, then folds the ALU over the test program | First "build a tiny VM" day (the Days 16/19/21 trilogy). `deriving (Enum, Bounded)` makes `allOps = [minBound..maxBound]` self-maintaining. Parser is ~85% of runtime (`read` over ~3200 lines, the Day 8 story); both parts sub-ms on parsed data. |
 | [17](day17_function_guide.md) | Reservoir Research | 12.18 ms | 27.38 ms | 27.38 ms | 66.9 ms | Recursive flood fill on an `STUArray s (Int,Int) Char` (the grid doubles as the visited-set), iterated to a monotone fixed point — wipe transient `\|`, keep permanent `#`/`~`, re-run from the spring until the settled count is stable (~35 passes) | Single recursive sweep is correct on the island-free example (57/29) but wrong on real terrain with internal clay boxes (gave 490 vs 26910); the implausible magnitude, not the green example, caught it. Fixed-point iteration = same tool as Day 12. P1==P2 because each re-runs the whole flood; `solve` shares one run. `forall s.` + ScopedTypeVariables to sign inner ST helpers. |
-| 18 | *not yet attempted* | — | — | — | — | — | — |
+| [18](day18_function_guide.md) | Settlers of the North Pole | 43.1 µs | 1.91 ms | 72.8 ms | 74.7 ms | 2-D cellular automaton (Game of Life family) stepped as a pure rebuilt `UArray (Int,Int) Char` (P1 = 10 steps); general cycle detection via `Map [Char] Int` of state→minute, then `(1e9 - t) mod period` projection (P2) | Day 12's period-1 fixed point generalised to a true period (~28); `elems` of the array is its own `Ord` state key. Pure `listArray`-per-step (no `ST`) because each cell is written exactly once per minute — contrast Day 17's revisiting flood. |
 | 19 | *not yet attempted* | — | — | — | — | — | — |
 | 20 | *not yet attempted* | — | — | — | — | — | — |
 | 21 | *not yet attempted* | — | — | — | — | — | — |
@@ -76,6 +76,7 @@ Reported on a Windows 11 / GHC 9.6.7 / `-O2` build via `cabal bench` (criterion)
 | [15](day15_function_guide.md) | Beverage Bandits | **248235** | **46784** |
 | [16](day16_function_guide.md) | Chronal Classification | **640** | **472** |
 | [17](day17_function_guide.md) | Reservoir Research | **26910** | **22182** |
+| [18](day18_function_guide.md) | Settlers of the North Pole | **745008** | **219425** |
 
 (Filled in as days are solved; pending days omitted from this table.)
 
