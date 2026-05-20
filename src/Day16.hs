@@ -67,7 +67,7 @@ module Day16
   , deduceCodes
   ) where
 
-import           Control.DeepSeq    (NFData)
+import           Control.DeepSeq    (NFData (..))
 import           Data.Array.Unboxed (UArray, elems, listArray, (!), (//))
 import           Data.Bits          ((.&.), (.|.))
 import           Data.IntMap.Strict (IntMap)
@@ -99,6 +99,12 @@ data Op
   | Gtir | Gtri | Gtrr
   | Eqir | Eqri | Eqrr
   deriving (Eq, Ord, Show, Enum, Bounded)
+
+-- | 'Op' is a tag enum (no payload), so WHNF is full evaluation --
+-- a single 'seq' suffices for 'rnf'.  Lives here, not in Day 19,
+-- to avoid an orphan instance.
+instance NFData Op where
+  rnf op = op `seq` ()
 
 -- | Every operation, derived from 'Enum'/'Bounded' so the list can
 -- never drift out of sync with the 'Op' definition.
