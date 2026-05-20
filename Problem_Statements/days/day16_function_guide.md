@@ -33,11 +33,13 @@ samples, run the program, report register 0.
 - [The algorithm in Python](#the-algorithm-in-python)
 - [Data model](#data-model)
 - [`applyOp` -- the whole instruction set](#applyop----the-whole-instruction-set)
+  - [How to read this: `r a` vs `a`](#how-to-read-this-r-a-vs-a)
 - [`matchingOps` -- what a sample is consistent with](#matchingops----what-a-sample-is-consistent-with)
 - [`parseInput` -- two sections, one pass](#parseinput----two-sections-one-pass)
 - [Part 1](#part-1)
 - [`deduceCodes` -- constraint propagation](#deducecodes----constraint-propagation)
 - [Part 2](#part-2)
+- [What does the test program *actually* compute?](#what-does-the-test-program-actually-compute)
 - [Tests](#tests)
 - [Benchmarks](#benchmarks)
 - [Key patterns](#key-patterns)
@@ -215,6 +217,61 @@ This single function *is* the CPU. New vocabulary:
 branches — cleaner than repeating `regs ! ` and the `if` sixteen
 times.
 
+### How to read this: `r a` vs `a`
+
+A Haskell-syntax fact worth pausing on, because every branch of the
+`case` above uses it: **function application in Haskell is just
+juxtaposition** — putting two things next to each other separated
+by whitespace. `r a` is *not* an unusual notation; it is "apply the
+function `r` to the argument `a`", the way C would write `r(a)`.
+Bare `a`, by contrast, is just the parameter value.
+
+So in `Addi -> r a + b`:
+
+- `r` is the local helper (defined two lines up: `r i = regs ! i`).
+- `r a` calls `r` with argument `a` — returns the value in register `a`.
+- `b` is the immediate value of the second operand, used directly.
+- Result: `regs[a] + b`.
+
+In `Addr -> r a + r b`, both `a` and `b` are register-mode: look up
+each in the register file, then add. The line parses as
+`(r a) + (r b)` because **function application has higher
+precedence than any operator** — Haskell cannot mistake it for
+`r (a + r) b` or anything else.
+
+The four variants of `add` displayed together make the operand-mode
+split as literal as possible:
+
+| Op   | Haskell expression | C analogue           | Meaning                  |
+|------|--------------------|----------------------|--------------------------|
+| `Addr` | `r a + r b`      | `regs[a] + regs[b]`  | both registers           |
+| `Addi` | `r a + b`        | `regs[a] + b`        | register + immediate     |
+| `Setr` | `r a`            | `regs[a]`            | the value in register a  |
+| `Seti` | `a`              | `a`                  | the immediate, no lookup |
+
+Read `r a` aloud as **"r of a"**, the way you'd read `f(x)` in math
+or C as "f of x". Haskell drops the parentheses; the meaning is
+the same.
+
+Parentheses only re-enter the picture to override precedence: `r (a + b)`
+is "look up register number `a + b`", while `r a + b` is "look up
+register `a`, then add `b`". Same characters, different parse.
+
+The one shape that *isn't* what it looks like:
+
+```haskell
+r a b
+```
+
+This is **not** "apply `r` to two arguments `a` and `b`" the way `r(a, b)`
+would be in C. It is `(r a) b` — apply `r` to `a`, then apply *the
+result* to `b`. If `r` returns an `Int` (as ours does), this is a
+type error. Haskell has no comma-separated argument list; every
+function "really" takes one argument at a time (currying), and you
+just write `f x y z` with spaces. It is why you see no commas
+between arguments anywhere in idiomatic Haskell, even when there
+are three or four of them.
+
 ---
 
 ## `matchingOps` -- what a sample is consistent with
@@ -383,6 +440,49 @@ number, then it is the same `applyOp` Part 1 used. `! 0` reads
 register 0 from the final state. The ALU is written once and serves
 both the sample analysis and the program execution — the parse-once,
 reuse-the-machinery discipline, now for code rather than data.
+
+---
+
+## What does the test program *actually* compute?
+
+This is the question Part 2's prose does not ask but
+[Day 19](day19_function_guide.md) trains you to ask reflexively:
+the test program is 868 instructions long, what is the algorithm
+hiding inside it?
+
+**Short answer**: there is no algorithm. Day 16's test program is
+*deliberately content-free*. With no flow-control opcodes (the IP
+just increments) and all-zero starting registers, the entire
+program is straight-line arithmetic that reduces to one constant
+— your Part 2 answer, 472. The program's job is not to compute
+anything *interesting*; its job is to **verify you classified
+every one of the 16 opcodes correctly**, because all 16 appear in
+it and any misreading makes the simulation diverge.
+
+This is the precursor to Day 19's much more interesting use of the
+same ALU: Day 19 adds an IP-bound register, gets real flow
+control, and uses it to hide an actual algorithm (σ(N)) inside a
+brute-force loop. Day 16, lacking jumps, can only assemble an
+obfuscated *constant* — but it does so with the deliberate aim of
+exercising every opcode, which is exactly the discipline Day 19's
+reverse-engineering then rewards.
+
+The full breakdown — opcode mapping for this input, instruction
+histogram, anatomy of the repeating snippets, register trajectory
+table, the "this is a checksum, not an algorithm" argument, and the
+trilogy framing — lives in a sibling supplement so the function
+guide stays focused on the Haskell:
+
+> **→ [day16_disassembly.md](day16_disassembly.md)** — Disassembly
+> supplement: opcode mapping, full breakdown of the program's
+> structure, anatomy of a code-generator-emitted snippet, the
+> monotone register climb to 472, and why this program is the
+> *meta-problem* before [Day 19](day19_function_guide.md)'s real one.
+
+Reproducible via
+[scripts/day16_disassemble.hs](../../scripts/day16_disassemble.hs)
+(`runghc -isrc scripts/day16_disassemble.hs`); the frozen 1,758-line
+output is at [scripts/day16_disassembly.txt](../../scripts/day16_disassembly.txt).
 
 ---
 
