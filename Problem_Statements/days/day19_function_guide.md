@@ -590,4 +590,4 @@ mechanism: Rust forbids aliasing, Haskell avoids mutation entirely.
 
 ---
 
-**Navigation**: [← Day 18](day18_function_guide.md) | [All Days](summary_2018.md) | [Day 20 →](day20.md)
+**Navigation**: [← Day 18](day18_function_guide.md) | [All Days](summary_2018.md) | [Day 20 →](day20_function_guide.md)

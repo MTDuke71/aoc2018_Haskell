@@ -1,6 +1,6 @@
 # Advent of Code 2018 — Haskell Solutions Summary
 
-**Status**: IN PROGRESS (20/26, including the Day 0 warm-up)
+**Status**: IN PROGRESS (21/26, including the Day 0 warm-up)
 **Project**: [aoc2018.cabal](../../aoc2018.cabal) — single cabal package, library modules `Day00..Day25` in [src/](../../src/), dispatcher [app/Main.hs](../../app/Main.hs), tests in [test/](../../test/), benches in [bench/](../../bench/).
 
 **Run a day**: `cabal run aoc2018-solve -- <n>` (reads `inputs/day<nn>.txt`).
@@ -13,9 +13,9 @@
 
 | Metric | Value |
 |--------|-------|
-| **Progress** | 20/26 (Day 0 warm-up + Days 1–19 done; Days 20–25 pending) |
-| **Total Runtime** | 3834.7 ms (Days 0–19) |
-| **Average per Day** | 191.7 ms |
+| **Progress** | 21/26 (Day 0 warm-up + Days 1–20 done; Days 21–25 pending) |
+| **Total Runtime** | 3855.3 ms (Days 0–20) |
+| **Average per Day** | 183.6 ms |
 
 ---
 
@@ -45,7 +45,7 @@ Reported on a Windows 11 / GHC 9.6.7 / `-O2` build via `cabal bench` (criterion)
 | [17](day17_function_guide.md) | Reservoir Research | 12.18 ms | 27.38 ms | 27.38 ms | 66.9 ms | Recursive flood fill on an `STUArray s (Int,Int) Char` (the grid doubles as the visited-set), iterated to a monotone fixed point — wipe transient `\|`, keep permanent `#`/`~`, re-run from the spring until the settled count is stable (~35 passes) | Single recursive sweep is correct on the island-free example (57/29) but wrong on real terrain with internal clay boxes (gave 490 vs 26910); the implausible magnitude, not the green example, caught it. Fixed-point iteration = same tool as Day 12. P1==P2 because each re-runs the whole flood; `solve` shares one run. `forall s.` + ScopedTypeVariables to sign inner ST helpers. |
 | [18](day18_function_guide.md) | Settlers of the North Pole | 43.1 µs | 1.91 ms | 72.8 ms | 74.7 ms | 2-D cellular automaton (Game of Life family) stepped as a pure rebuilt `UArray (Int,Int) Char` (P1 = 10 steps); general cycle detection via `Map [Char] Int` of state→minute, then `(1e9 - t) mod period` projection (P2) | Day 12's period-1 fixed point generalised to a true period (~28); `elems` of the array is its own `Ord` state key. Pure `listArray`-per-step (no `ST`) because each cell is written exactly once per minute — contrast Day 17's revisiting flood. |
 | [19](day19_function_guide.md) | Go With The Flow | 56.7 µs | 194.0 ms | 5.7 µs | 194.1 ms | IP-bound-register simulator over Day 16's ALU (P1 ≈ 1.6 M steps to halt); reverse-engineer the assembly as a brute-force divisor sum, then compute σ(N) in O(√N) (P2) | Marquee reverse-engineering puzzle of the calendar. Part 1 brute-simulates ~1.6 M steps (≈ 194 ms); Part 2 brute would be ~10^14 steps, so we simulate only the setup (~18 steps), harvest N, then call `sumOfDivisors`. 30,000× speedup; same trick would drop Part 1 to ~10 µs (function-guide sidebar). First module to import another day's interpreter (`Day16.applyOp`). |
-| 20 | *not yet attempted* | — | — | — | — | — | — |
+| [20](day20_function_guide.md) | A Regular Map | 9.49 ms | 5.58 ms | 5.53 ms | 20.6 ms | Single-pass regex walker with a stack of saved positions (`(` push, `\|` reset, `)` pop) building a canonical edge `Set`, then BFS over `Map Pos Int` with `Data.Sequence` queue | Door graph is exactly a tree (V=10000, E=9999) — the AoC regex shape always yields one. Both parts reduce the same BFS distance map; benches re-run it, `solve` shares it via `let`. First use of `Data.Sequence` as a pure FIFO queue. |
 | 21 | *not yet attempted* | — | — | — | — | — | — |
 | 22 | *not yet attempted* | — | — | — | — | — | — |
 | 23 | *not yet attempted* | — | — | — | — | — | — |
@@ -78,6 +78,7 @@ Reported on a Windows 11 / GHC 9.6.7 / `-O2` build via `cabal bench` (criterion)
 | [17](day17_function_guide.md) | Reservoir Research | **26910** | **22182** |
 | [18](day18_function_guide.md) | Settlers of the North Pole | **745008** | **219425** |
 | [19](day19_function_guide.md) | Go With The Flow | **1620** | **15827082** |
+| [20](day20_function_guide.md) | A Regular Map | **3835** | **8520** |
 
 (Filled in as days are solved; pending days omitted from this table.)
 

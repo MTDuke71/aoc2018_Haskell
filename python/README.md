@@ -29,5 +29,7 @@ The Python is the spec; the Haskell is the main solve. When a function guide say
 | 16 | Chronal Classification | [day16.py](day16.py) | [Day16.hs](../src/Day16.hs) | — |
 | 17 | Reservoir Research | [day17.py](day17.py) | [Day17.hs](../src/Day17.hs) | — |
 | 18 | Settlers of the North Pole | [day18.py](day18.py) | [Day18.hs](../src/Day18.hs) | — |
+| 19 | Go With The Flow | [day19.py](day19.py) | [Day19.hs](../src/Day19.hs) | — |
+| 20 | A Regular Map | [day20.py](day20.py) | [Day20.hs](../src/Day20.hs) | — |
 
 (Earlier days will be backfilled on demand.)
