@@ -1,0 +1,159 @@
+=== Disassembly (ip bound to r2) ===
+   0: seti      123        0 4   ; r4 = 123
+   1: bani        4      456 4   ; r4 = r4 & 456
+   2: eqri        4       72 4   ; r4 = (r4 == 72) ? 1 : 0
+   3: addr        4        2 2   ; ip += r4 -> if r4 == 1: skip next
+   4: seti        0        0 2   ; goto 1
+   5: seti        0        5 4   ; r4 = 0
+   6: bori        4    65536 5   ; r5 = r4 | 65536
+   7: seti  1765573        9 4   ; r4 = 1765573
+   8: bani        5      255 1   ; r1 = r5 & 255
+   9: addr        4        1 4   ; r4 = r4 + r1
+  10: bani        4 16777215 4   ; r4 = r4 & 16777215
+  11: muli        4    65899 4   ; r4 = r4 * 65899
+  12: bani        4 16777215 4   ; r4 = r4 & 16777215
+  13: gtir      256        5 1   ; r1 = (256 > r5) ? 1 : 0
+  14: addr        1        2 2   ; ip += r1 -> if r1 == 1: skip next
+  15: addi        2        1 2   ; goto 17
+  16: seti       27        0 2   ; goto 28
+  17: seti        0        8 1   ; r1 = 0
+  18: addi        1        1 3   ; r3 = r1 + 1
+  19: muli        3      256 3   ; r3 = r3 * 256
+  20: gtrr        3        5 3   ; r3 = (r3 > r5) ? 1 : 0
+  21: addr        3        2 2   ; ip += r3 -> if r3 == 1: skip next
+  22: addi        2        1 2   ; goto 24
+  23: seti       25        1 2   ; goto 26
+  24: addi        1        1 1   ; r1 = r1 + 1
+  25: seti       17        7 2   ; goto 18
+  26: setr        1        4 5   ; r5 = r1
+  27: seti        7        6 2   ; goto 8
+  28: eqrr        4        0 1   ; r1 = (r4 == r0) ? 1 : 0
+  29: addr        1        2 2   ; ip += r1 -> if r1 == 1: skip next
+  30: seti        5        2 2   ; goto 6
+
+=== The halt check ===
+  checkInfo = (ip 28, register 4)
+  i.e. the program halts iff r4 == r0 when ip 28 executes;
+  r0 is read nowhere else in the program.
+
+=== Extracted hash constants (hashSpec) ===
+  hashSeed = 1765573     (accumulator start each round)
+  hashMult = 65899       (FNV-style multiplier)
+  hashMask = 16777215    (0xFFFFFF, keep 24 bits)
+  byteMask = 255         (0xFF, low byte)
+  widenBit = 65536       (0x10000, OR'd onto the previous probe)
+
+=== First 45 steps, traced ===
+  step  ip  instruction        regs after        [r0,r1,r2,r3,r4,r5]
+     1   0  seti      123        0 4   [0,0,0,0,123,0]
+     2   1  bani        4      456 4   [0,0,1,0,72,0]
+     3   2  eqri        4       72 4   [0,0,2,0,1,0]
+     4   3  addr        4        2 2   [0,0,4,0,1,0]
+     5   5  seti        0        5 4   [0,0,5,0,0,0]
+     6   6  bori        4    65536 5   [0,0,6,0,0,65536]
+     7   7  seti  1765573        9 4   [0,0,7,0,1765573,65536]
+     8   8  bani        5      255 1   [0,0,8,0,1765573,65536]
+     9   9  addr        4        1 4   [0,0,9,0,1765573,65536]
+    10  10  bani        4 16777215 4   [0,0,10,0,1765573,65536]
+    11  11  muli        4    65899 4   [0,0,11,0,116349495127,65536]
+    12  12  bani        4 16777215 4   [0,0,12,0,16279383,65536]
+    13  13  gtir      256        5 1   [0,0,13,0,16279383,65536]
+    14  14  addr        1        2 2   [0,0,14,0,16279383,65536]
+    15  15  addi        2        1 2   [0,0,16,0,16279383,65536]
+    16  17  seti        0        8 1   [0,0,17,0,16279383,65536]
+    17  18  addi        1        1 3   [0,0,18,1,16279383,65536]
+    18  19  muli        3      256 3   [0,0,19,256,16279383,65536]
+    19  20  gtrr        3        5 3   [0,0,20,0,16279383,65536]
+    20  21  addr        3        2 2   [0,0,21,0,16279383,65536]
+    21  22  addi        2        1 2   [0,0,23,0,16279383,65536]
+    22  24  addi        1        1 1   [0,1,24,0,16279383,65536]
+    23  25  seti       17        7 2   [0,1,17,0,16279383,65536]
+    24  18  addi        1        1 3   [0,1,18,2,16279383,65536]
+    25  19  muli        3      256 3   [0,1,19,512,16279383,65536]
+    26  20  gtrr        3        5 3   [0,1,20,0,16279383,65536]
+    27  21  addr        3        2 2   [0,1,21,0,16279383,65536]
+    28  22  addi        2        1 2   [0,1,23,0,16279383,65536]
+    29  24  addi        1        1 1   [0,2,24,0,16279383,65536]
+    30  25  seti       17        7 2   [0,2,17,0,16279383,65536]
+    31  18  addi        1        1 3   [0,2,18,3,16279383,65536]
+    32  19  muli        3      256 3   [0,2,19,768,16279383,65536]
+    33  20  gtrr        3        5 3   [0,2,20,0,16279383,65536]
+    34  21  addr        3        2 2   [0,2,21,0,16279383,65536]
+    35  22  addi        2        1 2   [0,2,23,0,16279383,65536]
+    36  24  addi        1        1 1   [0,3,24,0,16279383,65536]
+    37  25  seti       17        7 2   [0,3,17,0,16279383,65536]
+    38  18  addi        1        1 3   [0,3,18,4,16279383,65536]
+    39  19  muli        3      256 3   [0,3,19,1024,16279383,65536]
+    40  20  gtrr        3        5 3   [0,3,20,0,16279383,65536]
+    41  21  addr        3        2 2   [0,3,21,0,16279383,65536]
+    42  22  addi        2        1 2   [0,3,23,0,16279383,65536]
+    43  24  addi        1        1 1   [0,4,24,0,16279383,65536]
+    44  25  seti       17        7 2   [0,4,17,0,16279383,65536]
+    45  18  addi        1        1 3   [0,4,18,5,16279383,65536]
+
+=== Execution profile: run to the first check ===
+  Per-IP execution counts over the full run from power-on to
+  the first arrival at the check (the check itself not executed).
+   0:      1  (  0.1%)  seti      123        0 4   ; r4 = 123
+   1:      1  (  0.1%)  bani        4      456 4   ; r4 = r4 & 456
+   2:      1  (  0.1%)  eqri        4       72 4   ; r4 = (r4 == 72) ? 1 : 0
+   3:      1  (  0.1%)  addr        4        2 2   ; ip += r4 -> if r4 == 1: skip next
+   4:      0  (  0.0%)  seti        0        0 2   ; goto 1
+   5:      1  (  0.1%)  seti        0        5 4   ; r4 = 0
+   6:      1  (  0.1%)  bori        4    65536 5   ; r5 = r4 | 65536
+   7:      1  (  0.1%)  seti  1765573        9 4   ; r4 = 1765573
+   8:      3  (  0.2%)  bani        5      255 1   ; r1 = r5 & 255
+   9:      3  (  0.2%)  addr        4        1 4   ; r4 = r4 + r1
+  10:      3  (  0.2%)  bani        4 16777215 4   ; r4 = r4 & 16777215
+  11:      3  (  0.2%)  muli        4    65899 4   ; r4 = r4 * 65899
+  12:      3  (  0.2%)  bani        4 16777215 4   ; r4 = r4 & 16777215
+  13:      3  (  0.2%)  gtir      256        5 1   ; r1 = (256 > r5) ? 1 : 0
+  14:      3  (  0.2%)  addr        1        2 2   ; ip += r1 -> if r1 == 1: skip next
+  15:      2  (  0.1%)  addi        2        1 2   ; goto 17
+  16:      1  (  0.1%)  seti       27        0 2   ; goto 28
+  17:      2  (  0.1%)  seti        0        8 1   ; r1 = 0
+  18:    259  ( 14.0%)  addi        1        1 3   ; r3 = r1 + 1
+  19:    259  ( 14.0%)  muli        3      256 3   ; r3 = r3 * 256
+  20:    259  ( 14.0%)  gtrr        3        5 3   ; r3 = (r3 > r5) ? 1 : 0
+  21:    259  ( 14.0%)  addr        3        2 2   ; ip += r3 -> if r3 == 1: skip next
+  22:    257  ( 13.9%)  addi        2        1 2   ; goto 24
+  23:      2  (  0.1%)  seti       25        1 2   ; goto 26
+  24:    257  ( 13.9%)  addi        1        1 1   ; r1 = r1 + 1
+  25:    257  ( 13.9%)  seti       17        7 2   ; goto 18
+  26:      2  (  0.1%)  setr        1        4 5   ; r5 = r1
+  27:      2  (  0.1%)  seti        7        6 2   ; goto 8
+  28:      0  (  0.0%)  eqrr        4        0 1   ; r1 = (r4 == r0) ? 1 : 0
+  29:      0  (  0.0%)  addr        1        2 2   ; ip += r1 -> if r1 == 1: skip next
+  30:      0  (  0.0%)  seti        5        2 2   ; goto 6
+  total steps to first check: 1846
+
+=== The probe stream ===
+  First ten probes (the first is Part 1's answer):
+    #1   12213578
+    #2   5640763
+    #3   6279007
+    #4   9492728
+    #5   4384250
+    #6   16143211
+    #7   12759752
+    #8   8091098
+    #9   1173379
+    #10  3254114
+  distinct probes before the first repeat: 12868
+  last new probe (Part 2's answer): #12868 = 5310683
+  first repeat: probe #12869 = 15949699, same as probe #11647
+  part1 prog = 12213578
+  part2 prog = 5310683
+
+=== Exact instruction counts (what the puzzle text asks about) ===
+  Per-round cost model (this input's template; q = v `div` 256):
+    self-test: 4 (the bani check passes, ip 4 is skipped)
+    power-on r4 = 0: 1
+    round header (bori + seti): 2
+    non-final byte: 8 hash + 1 + 7q + 5 trial-divide + 2 = 16 + 7q
+    final byte: 8;  check: 3 if not halting, 2 if halting
+  model cross-check vs the real VM (steps at 1st and 2nd check):
+    VM:    [1846,338955]
+    model: [1846,338955]
+  fewest instructions (halt at check #1,  r0 = 12213578): 1848
+  most instructions   (halt at check #12868, r0 = 5310683): 2976386661

@@ -30,10 +30,10 @@ bit 16) through the hash a byte at a time:
                                 # painfully slow trial-add loop
     # acc is the next check value
 
-The VM spends ~95% of its time in that `v //= 256` trial loop
+The VM spends 99.99% of its time in that `v //= 256` trial loop
 (the device has no shift or divide instruction!), so Part 2 is
 done by lifting the hash into native code: ~10k rounds of pure
-arithmetic instead of billions of simulated instructions.
+arithmetic instead of ~3 billion simulated instructions.
 
 All the constants (SEED, MULT, the masks) are extracted from the
 program text, not hard-coded -- every AoC input is this same

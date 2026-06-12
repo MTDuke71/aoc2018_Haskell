@@ -422,13 +422,17 @@ The three "build a VM" puzzles of AoC 2018 are calibrated to escalate:
 |----:|---------------------------------------------------------------|-----------------------------|
 | 16  | Anti-content: 868 instructions producing one constant.        | Identify all 16 opcodes.    |
 | 19  | A real algorithm hidden in brute force: σ(N).                 | Read assembly; compute σ(N).|
-| 21  | (forward reference) Another real algorithm — TBD when solved. | TBD                         |
+| 21  | A real *generator*: an FNV-style hash emitting a probe stream. | Find the one `eqrr` reading r0; characterise its stream. |
 
 Day 16 is the *opcode-identification* puzzle. Day 19 is the
 *program-comprehension* puzzle (the assembly is meaningful). Day 21
-will be the *interactive program-comprehension* puzzle (Part 1 will
-be passive observation; Part 2 will be something close to "what is
-the longest non-repeating input").
+turned out to be the *interactive program-comprehension* puzzle this
+section predicted: Part 1 is passive observation (break on the one
+instruction that reads r0, report the first value compared), and
+Part 2 is almost exactly "what is the longest non-repeating input"
+— the last new value the probe stream produces before it cycles.
+See the matching [Day 21 supplement](day21_disassembly.md) for that
+program under the same microscope.
 
 Reading Day 16's program as if it were Day 19's would lead you to
 spend hours looking for an algorithm that is not there. The

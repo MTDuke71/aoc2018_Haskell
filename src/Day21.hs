@@ -27,7 +27,7 @@
 -- a prime, mask again.  Each round feeds the previous check value
 -- (widened with bit 16) through that hash one byte at a time.  The
 -- device has no shift or divide instruction, so its @v \`div\` 256@
--- is a trial-multiply loop that eats ~95% of all executed
+-- is a trial-multiply loop that eats 99.99% of all executed
 -- instructions -- which is exactly why Part 2 lifts the hash into
 -- native Haskell instead of simulating it.
 --
