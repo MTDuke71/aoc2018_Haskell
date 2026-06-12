@@ -1,6 +1,6 @@
 # Advent of Code 2018 — Haskell Solutions Summary
 
-**Status**: IN PROGRESS (22/26, including the Day 0 warm-up)
+**Status**: IN PROGRESS (23/26, including the Day 0 warm-up)
 **Project**: [aoc2018.cabal](../../aoc2018.cabal) — single cabal package, library modules `Day00..Day25` in [src/](../../src/), dispatcher [app/Main.hs](../../app/Main.hs), tests in [test/](../../test/), benches in [bench/](../../bench/).
 
 **Run a day**: `cabal run aoc2018-solve -- <n>` (reads `inputs/day<nn>.txt`).
@@ -13,9 +13,9 @@
 
 | Metric | Value |
 |--------|-------|
-| **Progress** | 22/26 (Day 0 warm-up + Days 1–21 done; Days 22–25 pending) |
-| **Total Runtime** | 3857.7 ms (Days 0–21) |
-| **Average per Day** | 175.4 ms |
+| **Progress** | 23/26 (Day 0 warm-up + Days 1–22 done; Days 23–25 pending) |
+| **Total Runtime** | 4164.1 ms (Days 0–22) |
+| **Average per Day** | 181.0 ms |
 
 ---
 
@@ -47,7 +47,7 @@ Reported on a Windows 11 / GHC 9.6.7 / `-O2` build via `cabal bench` (criterion)
 | [19](day19_function_guide.md) | Go With The Flow | 56.7 µs | 194.0 ms | 5.7 µs | 194.1 ms | IP-bound-register simulator over Day 16's ALU (P1 ≈ 1.6 M steps to halt); reverse-engineer the assembly as a brute-force divisor sum, then compute σ(N) in O(√N) (P2) | Marquee reverse-engineering puzzle of the calendar. Part 1 brute-simulates ~1.6 M steps (≈ 194 ms); Part 2 brute would be ~10^14 steps, so we simulate only the setup (~18 steps), harvest N, then call `sumOfDivisors`. 30,000× speedup; same trick would drop Part 1 to ~10 µs (function-guide sidebar). First module to import another day's interpreter (`Day16.applyOp`). |
 | [20](day20_function_guide.md) | A Regular Map | 9.49 ms | 5.58 ms | 5.53 ms | 20.6 ms | Single-pass regex walker with a stack of saved positions (`(` push, `\|` reset, `)` pop) building a canonical edge `Set`, then BFS over `Map Pos Int` with `Data.Sequence` queue | Door graph is exactly a tree (V=10000, E=9999) — the AoC regex shape always yields one. Both parts reduce the same BFS distance map; benches re-run it, `solve` shares it via `let`. First use of `Data.Sequence` as a pure FIFO queue. |
 | [21](day21_function_guide.md) | Chronal Conversion | 52.1 µs | 44.0 µs | 2.30 ms | 2.40 ms | Breakpoint on the unique `eqrr _ 0 _` halt check (P1 = first probed value, ~1,846 VM steps); lift the byte-at-a-time FNV-style hash into native Haskell and collect probes in a `Data.IntSet` until the first repeat (P2 = last new value) | Closes the Days 16/19/21 VM trilogy. The device has no shift opcode, so 99.9% of a naive Part 2 simulation (~3.4 × 10⁹ instructions) is a trial-multiplication divide-by-256 loop; one native `div` per byte cuts it to 2.3 ms. Hash constants (`seed`/`mult`/masks) are pattern-matched out of the program text, not hard-coded — works on any AoC input. |
-| 22 | *not yet attempted* | — | — | — | — | — | — |
+| [22](day22_function_guide.md) | Mode Maze | 1.7 µs | 296.9 µs | 306.1 ms | 306.4 ms | Erosion grid as a knot-tied lazy self-referential `Array` (DP memoized by laziness); Dijkstra over the (position × tool) layered graph with `Data.Set` as the priority queue (P2) | First weighted shortest path of the year — Days 15/20's BFS with the FIFO swapped for a priority queue (lazy deletion instead of decrease-key). Tool `Enum` encoding makes every validity check one comparison (`fromEnum tool /= regionType`). Grid padded 100 past the target; a test pins the answer pad-independent at 200. A\*-with-Manhattan-heuristic + bucket-queue sidebar would cut ~10×. |
 | 23 | *not yet attempted* | — | — | — | — | — | — |
 | 24 | *not yet attempted* | — | — | — | — | — | — |
 | 25 | *not yet attempted* | — | — | — | — | — | — |
@@ -80,6 +80,7 @@ Reported on a Windows 11 / GHC 9.6.7 / `-O2` build via `cabal bench` (criterion)
 | [19](day19_function_guide.md) | Go With The Flow | **1620** | **15827082** |
 | [20](day20_function_guide.md) | A Regular Map | **3835** | **8520** |
 | [21](day21_function_guide.md) | Chronal Conversion | **12213578** | **5310683** |
+| [22](day22_function_guide.md) | Mode Maze | **9899** | **1051** |
 
 (Filled in as days are solved; pending days omitted from this table.)
 

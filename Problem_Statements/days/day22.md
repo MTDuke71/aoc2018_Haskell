@@ -59,6 +59,30 @@ In the cave system above, because the mouth is at `0,0` and the target is at `10
 
 *What is the total risk level for the smallest rectangle that includes `0,0` and the target's coordinates?*
 
+--- Part Two ---
+
+Okay, it's time to go rescue the man's friend.
+
+As you leave, he hands you some tools: a *torch* and some *climbing gear*. You can't equip both tools at once, and you can't leave either behind — but you can carry one while the other is stowed (carrying *neither* equipped is also an option).
+
+Tools can only be used in certain regions:
+
+- In *rocky* regions, you can use the *climbing gear* or the *torch*. You cannot use *neither* (you'll likely slip and fall).
+- In *wet* regions, you can use the *climbing gear* or *neither* tool. You cannot use the *torch* (if it gets wet, you won't have a light source).
+- In *narrow* regions, you can use the *torch* or *neither* tool. You cannot use the *climbing gear* (it's too bulky to fit).
+
+You start at `0,0` (the mouth of the cave) with *the torch equipped*. Regions with negative `X` or `Y` are solid rock and cannot be traversed; the fastest route might involve entering regions *beyond* the `X` or `Y` coordinate of the target.
+
+You can *move to an adjacent region* (up, down, left, or right; never diagonally) if your currently equipped tool allows you to enter that region. Moving takes *one minute*.
+
+You can *change your equipped tool* (to the other tool, or to neither) if the new equipment is valid in your current region. Switching always takes *seven minutes*, regardless of what you switch between.
+
+Finally, once you reach the target, you need *the torch equipped* before you can find him in the dark. The target is always in a *rocky* region, so switching to the torch there is always valid, but it costs time like any other switch.
+
+In the example cave (depth 510, target `10,10`), the quickest route takes *`45`* minutes — mostly single-minute moves down and right, plus a handful of seven-minute tool switches (including the final switch back to the torch at the target).
+
+*What is the fewest number of minutes you can take to reach the target?*
+
 ---
 
 **Navigation**: [<- Day 21](day21.md) | [All Days](README.md) | [Day 23 ->](day23.md)
