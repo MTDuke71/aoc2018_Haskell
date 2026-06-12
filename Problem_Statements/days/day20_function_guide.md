@@ -538,4 +538,4 @@ languages have idiomatic 30-line answers.
 
 ---
 
-**Navigation**: [← Day 19](day19_function_guide.md) | [All Days](summary_2018.md) | [Day 21 →](day21.md)
+**Navigation**: [← Day 19](day19_function_guide.md) | [All Days](summary_2018.md) | [Day 21 →](day21_function_guide.md)
