@@ -1,0 +1,21 @@
+# Normalize line endings: store everything as LF in the repo.
+# Prevents editors on Windows from inflating diffs with CRLF churn.
+* text=auto eol=lf
+
+# Explicit text types (belt and suspenders for the file kinds in this repo).
+*.hs    text eol=lf
+*.cabal text eol=lf
+*.md    text eol=lf
+*.txt   text eol=lf
+*.yaml  text eol=lf
+*.yml   text eol=lf
+*.json  text eol=lf
+*.py    text eol=lf
+*.sh    text eol=lf
+
+# Binary types: never touch line endings.
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.pdf   binary
