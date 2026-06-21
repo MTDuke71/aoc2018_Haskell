@@ -1,6 +1,6 @@
 # Advent of Code 2018 — Haskell Solutions Summary
 
-**Status**: IN PROGRESS (25/26, including the Day 0 warm-up)
+**Status**: COMPLETE (26/26, including the Day 0 warm-up) 🎄
 **Project**: [aoc2018.cabal](../../aoc2018.cabal) — single cabal package, library modules `Day00..Day25` in [src/](../../src/), dispatcher [app/Main.hs](../../app/Main.hs), tests in [test/](../../test/), benches in [bench/](../../bench/).
 
 **Run a day**: `cabal run aoc2018-solve -- <n>` (reads `inputs/day<nn>.txt`).
@@ -13,9 +13,9 @@
 
 | Metric | Value |
 |--------|-------|
-| **Progress** | 25/26 (Day 0 warm-up + Days 1–24 done; Day 25 pending) |
-| **Total Runtime** | 4386.2 ms (Days 0–24) |
-| **Average per Day** | 175.4 ms |
+| **Progress** | 26/26 — COMPLETE (Day 0 warm-up + Days 1–25 all solved) |
+| **Total Runtime** | 4395.9 ms (Days 0–25) |
+| **Average per Day** | 169.1 ms |
 
 ---
 
@@ -50,7 +50,7 @@ Reported on a Windows 11 / GHC 9.6.7 / `-O2` build via `cabal bench` (criterion)
 | [22](day22_function_guide.md) | Mode Maze | 1.7 µs | 296.9 µs | 306.1 ms | 306.4 ms | Erosion grid as a knot-tied lazy self-referential `Array` (DP memoized by laziness); Dijkstra over the (position × tool) layered graph with `Data.Set` as the priority queue (P2) | First weighted shortest path of the year — Days 15/20's BFS with the FIFO swapped for a priority queue (lazy deletion instead of decrease-key). Tool `Enum` encoding makes every validity check one comparison (`fromEnum tool /= regionType`). Grid padded 100 past the target; a test pins the answer pad-independent at 200. A\*-with-Manhattan-heuristic + bucket-queue sidebar would cut ~10×. |
 | [23](day23_function_guide.md) | Experimental Emergency Teleportation | 4.30 ms | 9.94 µs | 12.78 ms | 17.09 ms | Strongest-bot range count (P1); branch-and-bound over an octree with `Data.Set` as a priority queue keyed `(−count, distToOrigin, size, corner)`, splitting the most promising power-of-two cube into 8 octants until a 1×1×1 cell surfaces (P2) | First 3-D taxicab-ball puzzle. The box-coverage count is an admissible upper bound — monotone non-increasing as cubes shrink, while origin-distance is monotone non-decreasing — so the first 1×1×1 box popped is provably optimal, no fragile 1-D distance-interval heuristic needed. Same Set-as-PQ trick as Day 22's Dijkstra. |
 | [24](day24_function_guide.md) | Immune System Simulator 20XX | 156.6 µs | 3.99 ms | 200.9 ms | 205.0 ms | Two-phase combat (target selection by effective-power/initiative, attack by initiative) over an `IntMap Group` keyed by id; Part 2 linear-searches the smallest Immune attack boost that wins, with stalemate (zero-kill fight) detection | Rule-density, not algorithm, is the difficulty — one mis-ordered tie-break passes the example and fails the input. Every ordering is tuple `Ord` + `Down` (no comparators); id-keying lets attackers find weakened/dead targets by reference. Part 2 ≈ 50 full combats; binary search would cut it but linear is provably minimal. |
-| 25 | *not yet attempted* | — | — | — | — | — | — |
+| [25](day25_function_guide.md) | Four-Dimensional Adventure | 2.98 ms | 6.75 ms | — | 9.73 ms | Union-find (path compression + union by rank) over `STUArray` parent/rank tables; an O(n²) pairwise Manhattan scan feeds `union` directly, and the answer is the number of roots left | Day 25 has no Part 2 (free star). Connected components without building a graph — count self-parents for the component total. n≈1166, so the quadratic scan beats a spatial index. |
 
 ---
 
@@ -83,6 +83,7 @@ Reported on a Windows 11 / GHC 9.6.7 / `-O2` build via `cabal bench` (criterion)
 | [22](day22_function_guide.md) | Mode Maze | **9899** | **1051** |
 | [23](day23_function_guide.md) | Experimental Emergency Teleportation | **433** | **107272899** |
 | [24](day24_function_guide.md) | Immune System Simulator 20XX | **15165** | **4037** |
+| [25](day25_function_guide.md) | Four-Dimensional Adventure | **420** | *(free star)* |
 
 (Filled in as days are solved; pending days omitted from this table.)
 
