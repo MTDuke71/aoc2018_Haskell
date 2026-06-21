@@ -1,6 +1,6 @@
 # Advent of Code 2018 — Haskell Solutions Summary
 
-**Status**: IN PROGRESS (23/26, including the Day 0 warm-up)
+**Status**: IN PROGRESS (24/26, including the Day 0 warm-up)
 **Project**: [aoc2018.cabal](../../aoc2018.cabal) — single cabal package, library modules `Day00..Day25` in [src/](../../src/), dispatcher [app/Main.hs](../../app/Main.hs), tests in [test/](../../test/), benches in [bench/](../../bench/).
 
 **Run a day**: `cabal run aoc2018-solve -- <n>` (reads `inputs/day<nn>.txt`).
@@ -13,9 +13,9 @@
 
 | Metric | Value |
 |--------|-------|
-| **Progress** | 23/26 (Day 0 warm-up + Days 1–22 done; Days 23–25 pending) |
-| **Total Runtime** | 4164.1 ms (Days 0–22) |
-| **Average per Day** | 181.0 ms |
+| **Progress** | 24/26 (Day 0 warm-up + Days 1–23 done; Days 24–25 pending) |
+| **Total Runtime** | 4181.2 ms (Days 0–23) |
+| **Average per Day** | 174.2 ms |
 
 ---
 
@@ -48,7 +48,7 @@ Reported on a Windows 11 / GHC 9.6.7 / `-O2` build via `cabal bench` (criterion)
 | [20](day20_function_guide.md) | A Regular Map | 9.49 ms | 5.58 ms | 5.53 ms | 20.6 ms | Single-pass regex walker with a stack of saved positions (`(` push, `\|` reset, `)` pop) building a canonical edge `Set`, then BFS over `Map Pos Int` with `Data.Sequence` queue | Door graph is exactly a tree (V=10000, E=9999) — the AoC regex shape always yields one. Both parts reduce the same BFS distance map; benches re-run it, `solve` shares it via `let`. First use of `Data.Sequence` as a pure FIFO queue. |
 | [21](day21_function_guide.md) | Chronal Conversion | 52.1 µs | 44.0 µs | 2.30 ms | 2.40 ms | Breakpoint on the unique `eqrr _ 0 _` halt check (P1 = first probed value, ~1,846 VM steps); lift the byte-at-a-time FNV-style hash into native Haskell and collect probes in a `Data.IntSet` until the first repeat (P2 = last new value) | Closes the Days 16/19/21 VM trilogy. The device has no shift opcode, so 99.9% of a naive Part 2 simulation (~3.4 × 10⁹ instructions) is a trial-multiplication divide-by-256 loop; one native `div` per byte cuts it to 2.3 ms. Hash constants (`seed`/`mult`/masks) are pattern-matched out of the program text, not hard-coded — works on any AoC input. |
 | [22](day22_function_guide.md) | Mode Maze | 1.7 µs | 296.9 µs | 306.1 ms | 306.4 ms | Erosion grid as a knot-tied lazy self-referential `Array` (DP memoized by laziness); Dijkstra over the (position × tool) layered graph with `Data.Set` as the priority queue (P2) | First weighted shortest path of the year — Days 15/20's BFS with the FIFO swapped for a priority queue (lazy deletion instead of decrease-key). Tool `Enum` encoding makes every validity check one comparison (`fromEnum tool /= regionType`). Grid padded 100 past the target; a test pins the answer pad-independent at 200. A\*-with-Manhattan-heuristic + bucket-queue sidebar would cut ~10×. |
-| 23 | *not yet attempted* | — | — | — | — | — | — |
+| [23](day23_function_guide.md) | Experimental Emergency Teleportation | 4.30 ms | 9.94 µs | 12.78 ms | 17.09 ms | Strongest-bot range count (P1); branch-and-bound over an octree with `Data.Set` as a priority queue keyed `(−count, distToOrigin, size, corner)`, splitting the most promising power-of-two cube into 8 octants until a 1×1×1 cell surfaces (P2) | First 3-D taxicab-ball puzzle. The box-coverage count is an admissible upper bound — monotone non-increasing as cubes shrink, while origin-distance is monotone non-decreasing — so the first 1×1×1 box popped is provably optimal, no fragile 1-D distance-interval heuristic needed. Same Set-as-PQ trick as Day 22's Dijkstra. |
 | 24 | *not yet attempted* | — | — | — | — | — | — |
 | 25 | *not yet attempted* | — | — | — | — | — | — |
 
@@ -81,6 +81,7 @@ Reported on a Windows 11 / GHC 9.6.7 / `-O2` build via `cabal bench` (criterion)
 | [20](day20_function_guide.md) | A Regular Map | **3835** | **8520** |
 | [21](day21_function_guide.md) | Chronal Conversion | **12213578** | **5310683** |
 | [22](day22_function_guide.md) | Mode Maze | **9899** | **1051** |
+| [23](day23_function_guide.md) | Experimental Emergency Teleportation | **433** | **107272899** |
 
 (Filled in as days are solved; pending days omitted from this table.)
 
