@@ -81,6 +81,51 @@ That is a textbook dynamic-programming recurrence — the same shape
 as Day 11's summed-area table, except there the combination was `+`
 and here it is `*` followed by a `mod`.
 
+### The magic numbers are a PRNG
+
+The constants `16807`, `48271`, and `20183` aren't arbitrary, and
+they aren't (all) prime:
+
+| Number | Status | What it is |
+|--------|--------|------------|
+| `16807` | composite, `7⁵` | the original *minimal standard* LCG multiplier (Park & Miller, 1988) |
+| `48271` | prime | the *improved* MINSTD multiplier (Park, Miller & Stockmeyer, 1993) |
+| `20183` | prime | the working modulus the puzzle uses to keep values bounded |
+
+`16807` and `48271` are the two most famous multipliers of the
+**Lehmer / MINSTD pseudo-random number generator** — the linear
+congruential generator `x ↦ (a · x) mod m` that shipped in decades
+of C `rand()` implementations and numerical-recipes folklore. In
+their canonical home they pair with modulus `m = 2³¹ − 1 =
+2147483647`, a **Mersenne prime**; that is the number that's
+"specially prime" in this family, even though it doesn't appear here.
+
+Read the recurrence in that light and the whole erosion field *is* a
+**hand-rolled LCG laid out on a 2D grid**:
+
+```
+y == 0:  geo = x * 16807     -- MINSTD multiplier #1
+x == 0:  geo = y * 48271     -- MINSTD multiplier #2
+else:    geo = erosion(x-1, y) * erosion(x, y-1)
+erosion  = (geo + depth) mod 20183
+```
+
+Each cell multiplies and mods exactly like one LCG step, so
+`erosion mod 3` produces a map that *looks* random — rocky / wet /
+narrow scattered with no visible pattern — while being fully
+deterministic and reproducible from the two seed inputs (`depth`,
+`target`). That determinism is what lets the DP and the Dijkstra
+recompute the identical cave on every run. `20183` is just a prime
+the author picked for the modulus; the only nicety is that it isn't
+divisible by 3, so the downstream `mod 3` doesn't get a skewed
+type distribution.
+
+The canonical vocabulary worth keeping: **the Day 22 cave is a 2D
+Lehmer LCG**, and `16807` (`7⁵`) and `48271` are its signature
+multipliers. Same lineage as Day 14's recipe scoreboard and any
+"deterministic noise from a tiny seed" generator — when puzzle
+constants look like magic, check whether they're a PRNG's.
+
 **Part 1** sums the type numbers over the mouth-to-target rectangle
 (13 × 764 regions for our input).
 
@@ -468,6 +513,42 @@ If 100 were too tight, doubling it would change the answer and the
 test would fail. (And if the pad were somehow so small the goal got
 walled off entirely, the `Nothing` branch panics with a message
 naming the pad as the suspect.)
+
+### How far does the optimal path actually stray?
+
+The exchange argument above shows the pad is *sufficient*. It's
+worth confirming empirically that a pad is also *necessary* — i.e.
+the optimal path really does leave the mouth-to-target rectangle.
+Sweeping the pad and reconstructing the shortest path each time:
+
+| pad | answer | path max x | path max y |
+|----:|-------:|-----------:|-----------:|
+| 0 (clamped to target) | **1112** | 12 | 763 |
+| 5   | 1074 | 17 | 763 |
+| 10+ | **1051** | **22** | 763 |
+
+Two things fall out:
+
+- **Clamping to the tight rectangle gives the wrong answer.** With
+  `pad = 0` the search is boxed into the `(0,0)..(12,763)` rectangle
+  and returns **1112** — 61 minutes worse than the true optimum of
+  **1051**. The shortest route genuinely needs to exit the
+  rectangle; the pad is not just defensive padding, it's load-bearing.
+- **The straying is asymmetric: east, not south.** The optimal path
+  reaches `x = 22` — ten columns *past* the target's `x = 12` — but
+  never goes below `y = 763` (the target's own row). That's a
+  consequence of the rectangle's shape. The target `(12, 763)` makes
+  a tall, narrow strip: only 13 columns wide but 764 rows tall. With
+  so few columns, the cheapest route can't line up favourable
+  region/tool combinations without busting out sideways; vertically
+  it already has ample room, so descending past the target buys
+  nothing. The answer converges by `pad = 10`, comfortably inside
+  the shipped `pad = 100`.
+
+So the picture is complete: the exchange argument bounds the stray
+from above (≤ `U/2` columns), and this sweep shows the stray is
+strictly positive (≈10 columns east). A correct solver must pad;
+the only question the argument settles is *how much*.
 
 ### Possible optimization
 
