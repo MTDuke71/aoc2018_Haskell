@@ -162,4 +162,10 @@ Furthest room requires passing 31 doors
 
 ---
 
+--- Part Two ---
+Okay, so the facility is big.
+
+How many rooms have a shortest path from your current location that pass through at least 1000 doors?
+
+
 **Navigation**: [<- Day 19](day19.md) | [All Days](README.md) | [Day 21 ->](day21.md)

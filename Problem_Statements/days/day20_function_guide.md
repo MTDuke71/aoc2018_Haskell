@@ -45,6 +45,7 @@ doors.
 - [`parseInput` and `buildDoors`](#parseinput-and-builddoors)
 - [`distances` -- the BFS](#distances----the-bfs)
 - [`part1`, `part2`, `solve`](#part1-part2-solve)
+- [Counting the whole facility](#counting-the-whole-facility)
 - [Key patterns](#key-patterns)
 - [If I were writing this in Rust](#if-i-were-writing-this-in-rust)
 
@@ -433,6 +434,87 @@ directly as "BFS on a graph keyed by room coordinates."
 
 ---
 
+## Counting the whole facility
+
+Neither part asks "how big is the facility?", but it falls out for
+free — the BFS *already* visits every room, so the total room count
+is just the size of the distance map:
+
+```haskell
+facilitySize :: Puzzle -> Int
+facilitySize = Map.size . distances
+```
+
+`solve` prints it alongside the two answers:
+
+```
+  part 1: 3835
+  part 2: 8520
+  rooms in facility: 10000
+```
+
+Why this is the *complete* count, not a sample:
+
+- **The BFS reaches every room.** The facility is connected by
+  construction — every door joins two rooms, and the regex is
+  rooted at the origin — so a single BFS from `(0,0)` dequeues all
+  of them. `Map.size . distances` is therefore the whole facility,
+  not just the part the regex's "main line" walks through.
+- **You could skip the BFS entirely.** `buildDoors` already emits a
+  key for every room that has at least one door, and every room has
+  one (including the origin), so `Map.size . doors` gives the same
+  10000. Counting from the graph and counting from the BFS agree
+  precisely because the graph is connected.
+
+The round 10000 is the same number the BFS section flags as
+`V = 10000`, and it's the load-bearing fact behind the "the door
+graph is a tree" observation: `V = 10000`, `E = 9999`, so
+`V = E + 1` — every room except the origin is reached by exactly
+one door, no cycles.
+
+### Shape of the facility: a 100×100 perfect maze
+
+The rooms aren't a scattered corridor — they fill a perfect square.
+Taking the bounding box of every room coordinate:
+
+| Axis | Range      | Span          |
+|------|------------|---------------|
+| x    | −52 … 47   | **100** wide  |
+| y    | −50 … 49   | **100** tall  |
+
+So the bounding box is 100 × 100 = 10000 cells — and there are
+*exactly* 10000 rooms. The **fill ratio is 1.0**: every single
+lattice point inside the box is a room, no gaps.
+
+Combine that with the tree fact and the structure has a name:
+
+> A **100×100 grid of rooms, completely filled, whose doors form a
+> spanning tree of the grid** — i.e. a *perfect maze*.
+
+A perfect maze is the canonical object where every cell is reachable
+and there is *exactly one* path between any two rooms (no loops, no
+walled-off cells, no wasted space). That is precisely what
+`V = E + 1` over a fully-filled grid means: 10000 cells joined by
+9999 doors with no cycles. The puzzle author generated a perfect
+maze and serialised one full walk of it as the regex; our
+`buildDoors` fold just reconstructs the spanning tree edge by edge.
+
+This reframes both parts:
+
+- **Part 1** ("furthest room") is the **eccentricity of the root**
+  in the spanning tree — the deepest node from `(0,0)`. (The tree's
+  full *diameter* could be larger, between two arbitrary leaves; the
+  puzzle only asks for depth from the origin.)
+- **Part 2** ("rooms ≥ 1000 doors away") counts how many tree nodes
+  sit at depth ≥ 1000.
+
+The canonical vocabulary worth keeping: *perfect maze = spanning
+tree of a grid graph*. The same structure is what randomized-DFS,
+Wilson's, and Kruskal-on-a-grid maze generators all produce — "carve
+passages until every cell connects exactly once."
+
+---
+
 ## Key patterns
 
 - **A stack of saved positions is a regex evaluator.** As long as
@@ -465,6 +547,14 @@ directly as "BFS on a graph keyed by room coordinates."
   benched honestly, the dispatch executable pays the cost only
   once. The function-guide table is then transparent about the
   ≈2× over-count.
+
+- **Bounding box + fill ratio is a cheap structure probe.** When a
+  grid-shaped graph surprises you, take `(min, max)` of the
+  coordinates and compare `rooms / (width × height)` against `1.0`.
+  A ratio of exactly 1 says "filled rectangle"; combine it with
+  `E = V − 1` and you've identified a *spanning tree of a grid* — a
+  perfect maze — without drawing anything. Two `minimum`/`maximum`
+  passes turn "10000 rooms" into "a 100×100 perfect maze."
 
 ---
 

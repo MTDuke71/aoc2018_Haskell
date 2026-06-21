@@ -195,6 +195,64 @@ So the Part 2 trick is not algorithmic cleverness in the ALU sense
 — it is recognising what the assembly *is*. Once you see σ(N), the
 puzzle is two lines: simulate setup, then call `sum_of_divisors`.
 
+### The setup phase, disassembled (ip=17 → end)
+
+Above, the setup was elided with `...`. Here it is in full, with the
+register values it produces threaded down the right-hand column.
+`r4` is the IP-bound register; whenever an instruction reads `r4` it
+sees the *current* `ip`. Entry is at ip=17 with all registers at
+their seeds (Part 1: all 0; Part 2: r0=1, rest 0).
+
+```
+ip=17  addi 2 2 2     # r2 = r2 + 2          ; r2 = 2
+ip=18  mulr 2 2 2     # r2 = r2 * r2         ; r2 = 4
+ip=19  mulr 4 2 2     # r2 = ip * r2 = 19*4  ; r2 = 76
+ip=20  muli 2 11 2    # r2 = r2 * 11         ; r2 = 836
+ip=21  addi 1 6 1     # r1 = r1 + 6          ; r1 = 6
+ip=22  mulr 1 4 1     # r1 = r1 * ip = 6*22  ; r1 = 132
+ip=23  addi 1 18 1    # r1 = r1 + 18         ; r1 = 150
+ip=24  addr 2 1 2     # r2 = r2 + r1         ; r2 = 986       <-- N for PART 1
+ip=25  addr 4 0 4     # ip = ip + r0   <<< THE FORK: branch on the seed r0
+                      #   r0=0 (Part 1): ip -> 25, post-step ip=26  (fall through)
+                      #   r0=1 (Part 2): ip -> 26, post-step ip=27  (skip ip=26)
+ip=26  seti 0 3 4     # ip = 0  -> next ip = 1 : PART 1 done, jump to main loop
+                      # ----- the rest runs only on the Part 2 path -----
+ip=27  setr 4 5 1     # r1 = ip              ; r1 = 27
+ip=28  mulr 1 4 1     # r1 = r1 * ip = 27*28 ; r1 = 756
+ip=29  addr 4 1 1     # r1 = ip + r1 = 29+756; r1 = 785
+ip=30  mulr 4 1 1     # r1 = ip * r1 = 30*785; r1 = 23550
+ip=31  muli 1 14 1    # r1 = r1 * 14         ; r1 = 329700
+ip=32  mulr 1 4 1     # r1 = r1 * ip = ...*32; r1 = 10550400
+ip=33  addr 2 1 2     # r2 = r2 + r1         ; r2 = 10551386  <-- N for PART 2
+ip=34  seti 0 1 0     # r0 = 0               ; clear the seed so the loop sums clean
+ip=35  seti 0 4 4     # ip = 0  -> next ip = 1 : PART 2 done, jump to main loop
+```
+
+Three things to notice:
+
+- **ip=25 is the entire difference between the parts.** `addr 4 0 4`
+  adds `r0` to the IP. With the seed `r0 = 0` (Part 1) it is a no-op
+  jump that falls through to ip=26 and the loop starts with N = 986.
+  With the seed `r0 = 1` (Part 2) it nudges the IP one further,
+  *skipping* the ip=26 "jump home" and dropping into the ip=27–33
+  tail that multiplies N up to 10,551,386. This is the
+  `addr 4 0 4 at ip=25` referred to back in the prose.
+- **Every `mulr … 4 …` is a multiply-by-IP in disguise.** Because
+  `r4` holds the current `ip`, instructions like `mulr 4 2 2` and
+  `mulr 1 4 1` are really "multiply by the constant 19" or "…32" —
+  the program is *encoding constants in its own line numbers*. That
+  is why the disassembly is so cryptic and why staring at opcodes
+  alone never reveals the number.
+- **ip=34 (`seti 0 1 0`) resets r0 to 0** on the Part 2 path, so the
+  main-loop accumulator starts clean even though we seeded r0=1. The
+  seed's only job was to flip the ip=25 branch; it is thrown away
+  before the divisor sum begins.
+
+This is exactly the boundary `runUntilSetupComplete` detects: the
+last setup instruction (ip=26 for Part 1, ip=35 for Part 2) sets the
+IP back to 1, and the next step has `ip < setupStart` with
+`visited == True`, so we stop and read N off the registers.
+
 ---
 
 ## Data model
@@ -520,6 +578,32 @@ part1Fast prog =
 with a different seed.) That would drop the day's total runtime
 from ~194 ms to ~10 µs. Filed as a function-guide sidebar rather
 than swapped in.
+
+**Proof it returns the right value.** Harvesting N from the
+setup-only path with the Part 1 seed (`r0 = 0`) gives the registers
+`[r0=0, r1=150, r2=986, r3=0, r4=0, r5=0]`, so `maximum = 986` —
+exactly the `r2` the disassembly's ip=24 predicted. Tracing
+`sumOfDivisors 986` is short, because `isqrt 986 = 31` and only four
+of those `d` divide N:
+
+| d  | 986 mod d | divides? | pair 986/d | running total |
+|---:|----------:|:--------:|-----------:|--------------:|
+| 1  | 0         | ✓        | 986        | 987           |
+| 2  | 0         | ✓        | 493        | 1482          |
+| 17 | 0         | ✓        | 58         | 1557          |
+| 29 | 0         | ✓        | 34         | **1620**      |
+
+```
+sumOfDivisors 986   = 1620
+part1 (full sim)    = 1620   -- ~1.6 M steps, identical answer
+```
+
+Each small divisor `{1, 2, 17, 29}` pulls in its large partner
+`{986, 493, 58, 34}` for free — the O(√N) pairing in miniature. It
+matches the multiplicative formula too: `986 = 2 × 17 × 29`, so
+σ = `(1+2)(1+17)(1+29) = 3·18·30 = 1620`. The only thing separating
+Part 1 from Part 2 here is scale: the same four-column trace, but
+`isqrt 10551386 = 3248` rows instead of 31.
 
 ---
 

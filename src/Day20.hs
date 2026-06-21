@@ -42,6 +42,7 @@ module Day20
   , parseInput
   , part1
   , part2
+  , facilitySize
   , solve
 
     -- * Building blocks (exposed for tests)
@@ -175,9 +176,18 @@ part1 = maximum . Map.elems . distances
 part2 :: Puzzle -> Int
 part2 = length . filter (>= 1000) . Map.elems . distances
 
+-- | Total number of rooms in the facility -- i.e. every room the
+-- regex describes.  The BFS reaches all of them (the door graph is
+-- connected, rooted at the origin), so the count is just the size of
+-- the distance map.  Not a puzzle answer; exposed because "how big is
+-- the whole place?" is the natural follow-up question to Parts 1/2.
+facilitySize :: Puzzle -> Int
+facilitySize = Map.size . distances
+
 solve :: String -> IO ()
 solve contents = do
   let puzzle = parseInput contents
       d      = distances puzzle      -- one BFS, shared by both parts
   putStrLn ("  part 1: " ++ show (maximum (Map.elems d)))
   putStrLn ("  part 2: " ++ show (length (filter (>= 1000) (Map.elems d))))
+  putStrLn ("  rooms in facility: " ++ show (Map.size d))
